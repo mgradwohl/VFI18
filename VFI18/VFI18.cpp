@@ -4,33 +4,42 @@
 #include "stdafx.h"
 #include "VFI18.h"
 
-#define MAX_LOADSTRING 100
-
 // Global Variables:
-HINSTANCE hInst;                                // current instance
-WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
-WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
+HINSTANCE g_hInstance;
+wstring g_szTitle;
+wstring g_szWindowClass;
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
-BOOL                InitInstance(HINSTANCE, int);
+bool                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK OnPaint(HWND hWnd);
+LRESULT CALLBACK OnDestroy(HWND hWnd);
+LRESULT CALLBACK OnCommand(HWND hWnd, int id, HWND hwndCtrl, UINT codeNotify);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-                     _In_opt_ HINSTANCE hPrevInstance,
-                     _In_ LPWSTR    lpCmdLine,
-                     _In_ int       nCmdShow)
+    _In_opt_ HINSTANCE hPrevInstance,
+    _In_ LPWSTR    lpCmdLine,
+    _In_ int       nCmdShow)
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    // TODO: Place code here.
+    LPWSTR pszBuffer = nullptr;
+    g_szTitle.clear();
+    if (size_t length = ::LoadString(hInstance, IDS_APP_TITLE, (LPWSTR)&pszBuffer, 0))
+    {
+        g_szTitle.assign(pszBuffer, length);
+    }
 
-    // Initialize global strings
-    LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-    LoadStringW(hInstance, IDC_VFI18, szWindowClass, MAX_LOADSTRING);
-    MyRegisterClass(hInstance);
+    g_szWindowClass.clear();
+    if (size_t length = ::LoadString(hInstance, IDC_VFI18, (LPWSTR)&pszBuffer, 0))
+    {
+        g_szWindowClass.assign(pszBuffer, length);
+    }
+
+    MyRegisterClass(g_hInstance);
 
     // Perform application initialization:
     if (!InitInstance (hInstance, nCmdShow))
@@ -39,10 +48,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     }
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_VFI18));
-
+    
     MSG msg;
-
-    // Main message loop:
     while (GetMessage(&msg, nullptr, 0, 0))
     {
         if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
@@ -65,6 +72,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
     WNDCLASSEXW wcex;
+    ZeroMemory(&wcex, sizeof(WNDCLASSEXW));
 
     wcex.cbSize = sizeof(WNDCLASSEX);
 
@@ -77,7 +85,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
     wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
     wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_VFI18);
-    wcex.lpszClassName  = szWindowClass;
+    wcex.lpszClassName = g_szWindowClass.c_str();
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
     return RegisterClassExW(&wcex);
@@ -93,22 +101,21 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //        In this function, we save the instance handle in a global variable and
 //        create and display the main program window.
 //
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
+bool InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-   hInst = hInstance; // Store instance handle in our global variable
+   g_hInstance = hInstance; // Store instance handle in our global variable
 
-   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+   HWND hWnd = CreateWindowW(g_szWindowClass.c_str(), g_szTitle.c_str(), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {
-      return FALSE;
+      return false;
    }
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
-   return TRUE;
+   return true;
 }
 
 //
@@ -125,37 +132,45 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
-    case WM_COMMAND:
-        {
-            int wmId = LOWORD(wParam);
-            // Parse the menu selections:
-            switch (wmId)
-            {
-            case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-                break;
-            case IDM_EXIT:
-                DestroyWindow(hWnd);
-                break;
-            default:
-                return DefWindowProc(hWnd, message, wParam, lParam);
-            }
-        }
-        break;
-    case WM_PAINT:
-        {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: Add any drawing code that uses hdc here...
-            EndPaint(hWnd, &ps);
-        }
-        break;
-    case WM_DESTROY:
-        PostQuitMessage(0);
-        break;
+        HANDLE_MSG(hWnd, WM_COMMAND, OnCommand);
+        HANDLE_MSG(hWnd, WM_PAINT, OnPaint);
+        HANDLE_MSG(hWnd, WM_DESTROY, OnDestroy);
+
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
+    return 0;
+}
+
+LRESULT CALLBACK OnPaint(HWND hWnd)
+{
+    PAINTSTRUCT ps;
+    HDC hdc = BeginPaint(hWnd, &ps);
+    // TODO: Add any drawing code that uses hdc here...
+    EndPaint(hWnd, &ps);
+    return 0;
+}
+LRESULT CALLBACK OnCommand(HWND hWnd, int id, HWND hwndCtrl, UINT codeNotify)
+{
+    switch (id)
+    {
+    case IDM_ABOUT:
+        DialogBox(g_hInstance, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+        return 0;
+        break;
+    case IDM_EXIT:
+        DestroyWindow(hWnd);
+        return 0;
+        break;
+    default:
+        return DefWindowProc(hWnd, WM_COMMAND, id, codeNotify);
+    }
+    return (LRESULT)-1;
+}
+
+LRESULT CALLBACK OnDestroy(HWND hWnd)
+{
+    PostQuitMessage(0);
     return 0;
 }
 

@@ -11,7 +11,6 @@
 
 // Windows Header Files:
 #include <windows.h>
-#include <windowsx.h>
 #include <string>
 #include <memory>
 

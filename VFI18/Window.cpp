@@ -1,12 +1,62 @@
 #include "stdafx.h"
 #include "window.h"
 
-Window::Window()
+Window::Window(HINSTANCE hInstance)
 {
+	_hInstance = hInstance;
 }
 
 Window::~Window()
 {
+}
+
+LRESULT Window::StaticWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	Window *pThis = nullptr;
+
+	if (msg == WM_INITDIALOG)
+	{
+		pThis = reinterpret_cast<Window*>(lParam);
+		if (pThis != NULL)
+		{
+			SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)pThis);
+		}
+	}
+	else
+	{
+		pThis = (Window*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+	}
+
+	if (pThis != NULL)
+	{
+		return pThis->WndProc(hWnd, msg, wParam, lParam);
+	}
+	else
+	{
+		return DefWindowProc(hWnd, msg, wParam, lParam);
+	}
+}
+
+LRESULT CALLBACK Window::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	switch (msg)
+	{
+		case WM_PAINT:
+		{
+			OnPaint();
+			break;
+		}
+		case WM_DESTROY:
+		{
+			OnDestroy();
+			break;
+		}
+		default:
+		{
+			return DefWindowProc(hWnd, msg, wParam, lParam);
+		}
+	};
+	return 0;
 }
 
 void Window::OnPaint()
@@ -64,26 +114,38 @@ bool Window::SetWindowClassAttributes(WORD idIcon, WORD idSmallIcon, WORD idMenu
 	}
 
 	_szMenuName.clear();
-	if (size_t length = ::LoadString(_hInstance, idMenu, (LPWSTR)&pszBuffer, 0))
+	if (idMenu != 0)
 	{
-		_szMenuName.assign(pszBuffer, length);
+		if (size_t length = ::LoadString(_hInstance, idMenu, (LPWSTR)&pszBuffer, 0))
+		{
+			_szMenuName.assign(pszBuffer, length);
+		}
+		else
+		{
+			return false;
+		}
+
+		_hMenu = ::LoadMenu(_hInstance, MAKEINTRESOURCE(idMenu));
+		if (_hMenu == NULL)
+		{
+			ErrorMessageBox(::GetLastError(), L"LoadMenu failed");
+			return false;
+		}
 	}
-	else
-	{
-		return false;
-	}
+
+	return true;
 }
 
 bool Window::InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-	_hInstance = hInstance; // Store instance handle in our global variable
+	//_hInstance = hInstance; // Store instance handle in our global variable
 
 	if (RegisterClass() == 0)
 	{
 		return false;
 	}
 
-	_hWnd = CreateWindowW(_szWindowClass.c_str(), _szTitle.c_str(), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, _hInstance, nullptr);
+	_hWnd = CreateWindowW(_szWindowClass.c_str(), _szTitle.c_str(), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, _hMenu, _hInstance, nullptr);
 	if (!_hWnd)
 	{
 		return false;
@@ -118,7 +180,7 @@ ATOM Window::RegisterClass()
 	wcex.cbSize = sizeof(WNDCLASSEX);
 
 	wcex.style = CS_HREDRAW | CS_VREDRAW;
-	wcex.lpfnWndProc = WndProc;
+	wcex.lpfnWndProc = &Window::StaticWndProc;
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = 0;
 	wcex.hInstance = _hInstance;
@@ -130,4 +192,25 @@ ATOM Window::RegisterClass()
 	wcex.hIconSm = _hSmallIcon;
 
 	return RegisterClassExW(&wcex);
+}
+
+int Window::ErrorMessageBox(const DWORD dwError, wstring szMessage)
+{
+	LPWSTR pBuffer = nullptr;
+	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+		NULL, dwError,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPWSTR)&pBuffer, 0, NULL);
+
+	const wstring errortext(L"%s\r\n\r\nError number: %lu\r\n\r\n%s");
+	const int bufferlength = szMessage.length() + lstrlen(pBuffer) + errortext.length() + 1;
+
+	wstring buffer;
+	buffer.resize(bufferlength);
+
+	wsprintf(&buffer[0], errortext.c_str(), szMessage.c_str(), dwError, pBuffer);
+	LocalFree(pBuffer);
+
+	const int error = MessageBox(_hWnd, buffer.c_str(), _szTitle.c_str(), MB_OK | MB_ICONINFORMATION);
+	return error;
 }

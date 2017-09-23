@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "VFI18.h"
+#include "window.h"
 
 // Global Variables:
 HINSTANCE g_hInstance;
@@ -10,12 +11,8 @@ wstring g_szTitle;
 wstring g_szWindowClass;
 
 // Forward declarations of functions included in this code module:
-ATOM                MyRegisterClass(HINSTANCE hInstance);
-bool                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK OnPaint(HWND hWnd);
-LRESULT CALLBACK OnDestroy(HWND hWnd);
 LRESULT CALLBACK OnCommand(HWND hWnd, int id, HWND hwndCtrl, UINT codeNotify);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -26,97 +23,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    LPWSTR pszBuffer = nullptr;
-    g_szTitle.clear();
-    if (size_t length = ::LoadString(hInstance, IDS_APP_TITLE, (LPWSTR)&pszBuffer, 0))
-    {
-        g_szTitle.assign(pszBuffer, length);
-    }
+	Window appWindow;
+	if (!appWindow.SetWindowClassAttributes(IDI_VFI18, IDI_SMALL, IDC_VFI18, IDC_VFI18, IDS_APP_TITLE, IDC_VFI18))
+	{
+		return FALSE;
+	}
 
-    g_szWindowClass.clear();
-    if (size_t length = ::LoadString(hInstance, IDC_VFI18, (LPWSTR)&pszBuffer, 0))
-    {
-        g_szWindowClass.assign(pszBuffer, length);
-    }
+	if (!appWindow.InitInstance(hInstance, nCmdShow))
+	{
+		return FALSE;
+	}
 
-    MyRegisterClass(g_hInstance);
-
-    // Perform application initialization:
-    if (!InitInstance (hInstance, nCmdShow))
-    {
-        return FALSE;
-    }
-
-    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_VFI18));
-    
-    MSG msg;
-    while (GetMessage(&msg, nullptr, 0, 0))
-    {
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
-    }
-
-    return (int) msg.wParam;
-}
+	appWindow.Go();
+ }
 
 
 
-//
-//  FUNCTION: MyRegisterClass()
-//
-//  PURPOSE: Registers the window class.
-//
-ATOM MyRegisterClass(HINSTANCE hInstance)
-{
-    WNDCLASSEXW wcex;
-    ZeroMemory(&wcex, sizeof(WNDCLASSEXW));
-
-    wcex.cbSize = sizeof(WNDCLASSEX);
-
-    wcex.style          = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc    = WndProc;
-    wcex.cbClsExtra     = 0;
-    wcex.cbWndExtra     = 0;
-    wcex.hInstance      = hInstance;
-    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_VFI18));
-    wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_VFI18);
-    wcex.lpszClassName = g_szWindowClass.c_str();
-    wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
-
-    return RegisterClassExW(&wcex);
-}
-
-//
-//   FUNCTION: InitInstance(HINSTANCE, int)
-//
-//   PURPOSE: Saves instance handle and creates main window
-//
-//   COMMENTS:
-//
-//        In this function, we save the instance handle in a global variable and
-//        create and display the main program window.
-//
-bool InitInstance(HINSTANCE hInstance, int nCmdShow)
-{
-   g_hInstance = hInstance; // Store instance handle in our global variable
-
-   HWND hWnd = CreateWindowW(g_szWindowClass.c_str(), g_szTitle.c_str(), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
-
-   if (!hWnd)
-   {
-      return false;
-   }
-
-   ShowWindow(hWnd, nCmdShow);
-   UpdateWindow(hWnd);
-
-   return true;
-}
 
 //
 //  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
@@ -142,14 +64,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-LRESULT CALLBACK OnPaint(HWND hWnd)
-{
-    PAINTSTRUCT ps;
-    HDC hdc = BeginPaint(hWnd, &ps);
-    // TODO: Add any drawing code that uses hdc here...
-    EndPaint(hWnd, &ps);
-    return 0;
-}
 LRESULT CALLBACK OnCommand(HWND hWnd, int id, HWND hwndCtrl, UINT codeNotify)
 {
     switch (id)
@@ -166,12 +80,6 @@ LRESULT CALLBACK OnCommand(HWND hWnd, int id, HWND hwndCtrl, UINT codeNotify)
         return DefWindowProc(hWnd, WM_COMMAND, id, codeNotify);
     }
     return (LRESULT)-1;
-}
-
-LRESULT CALLBACK OnDestroy(HWND hWnd)
-{
-    PostQuitMessage(0);
-    return 0;
 }
 
 // Message handler for about box.

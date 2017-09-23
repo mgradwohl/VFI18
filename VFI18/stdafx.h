@@ -14,6 +14,10 @@
 #include <string>
 #include <memory>
 
+#include <CommCtrl.h>
+
 using namespace std;
+
+#include "resource.h"
 
 // TODO: reference additional headers your program requires here

@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "window.h"
+#include "AboutBox.h"
+#include "StatusBar.h"
 
 Window::Window(HINSTANCE hInstance)
 {
@@ -12,20 +14,7 @@ Window::~Window()
 
 LRESULT Window::StaticWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	Window *pThis = nullptr;
-
-	if (msg == WM_INITDIALOG)
-	{
-		pThis = reinterpret_cast<Window*>(lParam);
-		if (pThis != NULL)
-		{
-			SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)pThis);
-		}
-	}
-	else
-	{
-		pThis = (Window*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
-	}
+	Window *pThis = (Window*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 
 	if (pThis != NULL)
 	{
@@ -51,6 +40,15 @@ LRESULT CALLBACK Window::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 			OnDestroy();
 			break;
 		}
+		case WM_SIZE:
+		{
+			OnSize(LOWORD(lParam));
+			break;
+		}
+		case WM_COMMAND:
+		{
+			OnCommand((HWND)lParam, LOWORD(wParam), HIWORD(wParam));
+		}
 		default:
 		{
 			return DefWindowProc(hWnd, msg, wParam, lParam);
@@ -59,17 +57,30 @@ LRESULT CALLBACK Window::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 	return 0;
 }
 
-void Window::OnPaint()
+void Window::OnSize(int Width)
 {
-	PAINTSTRUCT ps;
-	HDC hdc = BeginPaint(_hWnd, &ps);
-	// TODO: Add any drawing code that uses hdc here...
-	EndPaint(_hWnd, &ps);
+	_statusbar.Resize(Width);
 }
 
-void Window::OnDestroy()
+LRESULT CALLBACK Window::OnCommand(HWND hwndCtrl, int id, UINT codeNotify)
 {
-	PostQuitMessage(0);
+	switch (id)
+	{
+		case IDM_ABOUT:
+		{
+			AboutBox aboutBox;
+			aboutBox.Create(_hInstance, _hWnd);
+			return 0;
+		}
+		case IDM_EXIT:
+		{
+			DestroyWindow(_hWnd);
+			return 0;
+		}
+		default:
+		return DefWindowProc(_hWnd, WM_COMMAND, id, codeNotify);
+	}
+	return (LRESULT)-1;
 }
 
 bool Window::SetWindowClassAttributes(WORD idIcon, WORD idSmallIcon, WORD idMenu, WORD idAccelerators, WORD idClass, WORD idTitle)
@@ -138,9 +149,7 @@ bool Window::SetWindowClassAttributes(WORD idIcon, WORD idSmallIcon, WORD idMenu
 
 bool Window::InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-	//_hInstance = hInstance; // Store instance handle in our global variable
-
-	if (RegisterClass() == 0)
+	if (!RegisterClass())
 	{
 		return false;
 	}
@@ -150,6 +159,10 @@ bool Window::InitInstance(HINSTANCE hInstance, int nCmdShow)
 	{
 		return false;
 	}
+
+	SetWindowLongPtr(_hWnd, GWLP_USERDATA, (LONG_PTR)this);
+
+	_statusbar.Create(_hWnd, _hInstance);
 
 	ShowWindow(_hWnd, nCmdShow);
 	UpdateWindow(_hWnd);
@@ -172,7 +185,7 @@ int Window::Go()
 	return (int)msg.wParam;
 }
 
-ATOM Window::RegisterClass()
+bool Window::RegisterClass()
 {
 	WNDCLASSEXW wcex;
 	ZeroMemory(&wcex, sizeof(WNDCLASSEXW));
@@ -191,7 +204,11 @@ ATOM Window::RegisterClass()
 	wcex.lpszClassName = _szWindowClass.c_str();
 	wcex.hIconSm = _hSmallIcon;
 
-	return RegisterClassExW(&wcex);
+	if (RegisterClassExW(&wcex) == 0)
+	{
+		return false;
+	}
+	return true;
 }
 
 int Window::ErrorMessageBox(const DWORD dwError, wstring szMessage)
@@ -203,7 +220,7 @@ int Window::ErrorMessageBox(const DWORD dwError, wstring szMessage)
 		(LPWSTR)&pBuffer, 0, NULL);
 
 	const wstring errortext(L"%s\r\n\r\nError number: %lu\r\n\r\n%s");
-	const int bufferlength = szMessage.length() + lstrlen(pBuffer) + errortext.length() + 1;
+	const size_t bufferlength = szMessage.length() + lstrlen(pBuffer) + errortext.length() + 1;
 
 	wstring buffer;
 	buffer.resize(bufferlength);
@@ -213,4 +230,17 @@ int Window::ErrorMessageBox(const DWORD dwError, wstring szMessage)
 
 	const int error = MessageBox(_hWnd, buffer.c_str(), _szTitle.c_str(), MB_OK | MB_ICONINFORMATION);
 	return error;
+}
+
+void Window::OnPaint()
+{
+	PAINTSTRUCT ps;
+	HDC hdc = BeginPaint(_hWnd, &ps);
+	// TODO: Add any drawing code that uses hdc here...
+	EndPaint(_hWnd, &ps);
+}
+
+void Window::OnDestroy()
+{
+	PostQuitMessage(0);
 }

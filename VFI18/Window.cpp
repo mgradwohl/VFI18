@@ -160,9 +160,13 @@ bool Window::InitInstance(HINSTANCE hInstance, int nCmdShow)
 		return false;
 	}
 
+	// store the this pointer so Window::WndProc doesn't need to be static
 	SetWindowLongPtr(_hWnd, GWLP_USERDATA, (LONG_PTR)this);
 
-	_statusbar.Create(_hWnd, _hInstance);
+	// Setup the status bar with 3 panes, 1: 50%, 2: 25%, 3: 25%
+	vector<float> panes({ 0.50, 0.25, 0.25 });
+	_statusbar.Initialize(_hInstance, _hWnd, panes);
+	_statusbar.Create();
 
 	ShowWindow(_hWnd, nCmdShow);
 	UpdateWindow(_hWnd);

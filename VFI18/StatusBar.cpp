@@ -1,15 +1,34 @@
 #include "stdafx.h"
 #include "StatusBar.h"
+#include "resource.h"
 
 StatusBar::StatusBar()
 {
+	_hWnd = NULL;
+	_panes.clear();
+	_strIdle.clear();
 }
 
 StatusBar::~StatusBar()
 {
 }
 
-bool StatusBar::Create(HWND hWndParent, HINSTANCE hInstance)
+bool StatusBar::Initialize(HINSTANCE hInstance, HWND hWndParent, vector<float>& panes)
+{
+	_hInstance = hInstance;
+	_panes = panes;
+	_hWndParent = hWndParent;
+	LPWSTR pszBuffer = nullptr;
+
+	_strIdle.clear();
+	if (size_t length = ::LoadStringW(_hInstance, IDS_STATUSIDLE, (LPWSTR)&pszBuffer, 0))
+	{
+		_strIdle.assign(pszBuffer, length);
+	}
+
+	return true;
+}
+bool StatusBar::Create()
 {
 	INITCOMMONCONTROLSEX iccx;
 	iccx.dwSize = sizeof(INITCOMMONCONTROLSEX);
@@ -17,19 +36,7 @@ bool StatusBar::Create(HWND hWndParent, HINSTANCE hInstance)
 	InitCommonControlsEx(&iccx);
 
 	HMENU idStatus = 0;
-	// Create the status bar.
-	HWND hWndStatus = CreateWindowEx(
-		0,                       // no extended styles
-		STATUSCLASSNAME,         // name of status bar class
-		L"Ready",           // no text when first created
-		SBARS_SIZEGRIP |         // includes a sizing grip
-		WS_CHILD | WS_VISIBLE,   // creates a visible child window
-		0, 0, 0, 0,              // ignores size and position
-		hWndParent,              // handle to parent window
-		(HMENU)idStatus,       // child window identifier
-		hInstance,                   // handle to application instance
-		NULL);                   // no window creation data
-
+	HWND hWndStatus = CreateWindowEx(0,	STATUSCLASSNAME, _strIdle.c_str(), SBARS_SIZEGRIP | WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, _hWndParent,	(HMENU)idStatus, _hInstance, NULL);
 	if (hWndStatus == NULL)
 	{
 		return false;
@@ -41,12 +48,14 @@ bool StatusBar::Create(HWND hWndParent, HINSTANCE hInstance)
 
 void StatusBar::Resize(int Width)
 {
-	// all this should be fixed
+	vector<int> panes;
+	int w = 0;
+	for (vector<float>::iterator it = _panes.begin(); it != _panes.end(); ++it)
+	{
+		w += *it * Width;
+		panes.push_back(w);
+	}
 
-	int nWidths[3];
-	nWidths[0] = 2 * Width / 4;
-	nWidths[1] = 3 * Width / 4;
-	nWidths[2] = 4 * Width / 4;
-	SendMessage(_hWnd, SB_SETPARTS, 3, (LPARAM)nWidths);
+	SendMessage(_hWnd, SB_SETPARTS, _panes.size(), (LPARAM)&panes[0]);
 	SendMessage(_hWnd, WM_SIZE, 0, 0);
 }

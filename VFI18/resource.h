@@ -2,17 +2,16 @@
 // Microsoft Visual C++ generated include file.
 // Used by VFI18.rc
 //
-#define IDC_MYICON                      2
-#define IDD_VFI18_DIALOG                102
-#define IDS_APP_TITLE                   103
-#define IDD_ABOUTBOX                    103
+#define DIALOG_ABOUTBOX                 102
+#define STRING_TITLE                    103
 #define IDM_ABOUT                       104
-#define IDS_STATUSIDLE                  104
 #define IDM_EXIT                        105
-#define IDI_VFI18                       107
-#define IDI_SMALL                       108
-#define IDC_VFI18                       109
-#define IDR_MAINFRAME                   128
+#define STRING_STATUSIDLE               106
+#define ICON_SMALL_VFI18                107
+#define ICON_LARGE_VFI18                108
+#define MENU_VFI18                      109
+#define ACCELERATORS_VFI18              110
+#define STRING_CLASS                    111
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -20,9 +19,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        129
+#define _APS_NEXT_RESOURCE_VALUE        113
 #define _APS_NEXT_COMMAND_VALUE         32771
 #define _APS_NEXT_CONTROL_VALUE         1000
-#define _APS_NEXT_SYMED_VALUE           110
+#define _APS_NEXT_SYMED_VALUE           112
 #endif
 #endif

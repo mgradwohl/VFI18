@@ -29,7 +29,7 @@ INT_PTR CALLBACK AboutBox::StaticAboutDialogProc(HWND hDlg, UINT message, WPARAM
 
 void AboutBox::Create(HINSTANCE hInstance, HWND hParent )
 {
-	DialogBoxParamW(hInstance, MAKEINTRESOURCE(IDD_ABOUTBOX), hParent, &AboutBox::StaticAboutDialogProc, (LPARAM)this);
+	DialogBoxParamW(hInstance, MAKEINTRESOURCE(DIALOG_ABOUTBOX), hParent, &AboutBox::StaticAboutDialogProc, (LPARAM)this);
 }
 
 INT_PTR AboutBox::OnInitDialog(HWND hDlg)

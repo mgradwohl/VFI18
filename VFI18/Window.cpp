@@ -83,21 +83,21 @@ LRESULT CALLBACK Window::OnCommand(HWND hwndCtrl, int id, UINT codeNotify)
 	return (LRESULT)-1;
 }
 
-bool Window::SetWindowClassAttributes(WORD idIcon, WORD idSmallIcon, WORD idMenu, WORD idAccelerators, WORD idClass, WORD idTitle)
+bool Window::SetWindowClassAttributes(CLASSATTRIBS* classattribs)
 {
-	_hIcon = LoadIconW(_hInstance, MAKEINTRESOURCE(idIcon));
+	_hIcon = LoadIconW(_hInstance, MAKEINTRESOURCE(classattribs->idIcon));
 	if (_hIcon == NULL)
 	{
 		return false;
 	}
 
-	_hSmallIcon = LoadIconW(_hInstance, MAKEINTRESOURCE(idSmallIcon));
+	_hSmallIcon = LoadIconW(_hInstance, MAKEINTRESOURCE(classattribs->idSmallIcon));
 	if (_hIcon == NULL)
 	{
 		return false;
 	}
 
-	_hAccelerators = LoadAccelerators(_hInstance, MAKEINTRESOURCE(idAccelerators));
+	_hAccelerators = LoadAccelerators(_hInstance, MAKEINTRESOURCE(classattribs->idAccelerators));
 	if (_hAccelerators == NULL)
 	{
 		return false;
@@ -105,7 +105,7 @@ bool Window::SetWindowClassAttributes(WORD idIcon, WORD idSmallIcon, WORD idMenu
 
 	LPWSTR pszBuffer = nullptr;
 	_szTitle.clear();
-	if (size_t length = ::LoadString(_hInstance, idTitle, (LPWSTR)&pszBuffer, 0))
+	if (size_t length = ::LoadString(_hInstance, classattribs->idTitle, (LPWSTR)&pszBuffer, 0))
 	{
 		_szTitle.assign(pszBuffer, length);
 	}
@@ -115,7 +115,7 @@ bool Window::SetWindowClassAttributes(WORD idIcon, WORD idSmallIcon, WORD idMenu
 	}
 
 	_szWindowClass.clear();
-	if (size_t length = ::LoadString(_hInstance, idClass, (LPWSTR)&pszBuffer, 0))
+	if (size_t length = ::LoadString(_hInstance, classattribs->idClass, (LPWSTR)&pszBuffer, 0))
 	{
 		_szWindowClass.assign(pszBuffer, length);
 	}
@@ -125,18 +125,21 @@ bool Window::SetWindowClassAttributes(WORD idIcon, WORD idSmallIcon, WORD idMenu
 	}
 
 	_szMenuName.clear();
-	if (idMenu != 0)
+	if (classattribs->idMenu != 0)
 	{
-		if (size_t length = ::LoadString(_hInstance, idMenu, (LPWSTR)&pszBuffer, 0))
-		{
-			_szMenuName.assign(pszBuffer, length);
-		}
-		else
-		{
-			return false;
-		}
+		// you actually don't need a menu name at all, just load the resource
 
-		_hMenu = ::LoadMenu(_hInstance, MAKEINTRESOURCE(idMenu));
+		//if (size_t length = ::LoadString(_hInstance, classattribs->idMenu, (LPWSTR)&pszBuffer, 0))
+		//{
+		//	_szMenuName.assign(pszBuffer, length);
+		//}
+		//else
+		//{
+		//	ErrorMessageBox(::GetLastError(), L"LoadMenu failed");
+		//	return false;
+		//}
+
+		_hMenu = ::LoadMenu(_hInstance, MAKEINTRESOURCE(classattribs->idMenu));
 		if (_hMenu == NULL)
 		{
 			ErrorMessageBox(::GetLastError(), L"LoadMenu failed");
@@ -147,7 +150,7 @@ bool Window::SetWindowClassAttributes(WORD idIcon, WORD idSmallIcon, WORD idMenu
 	return true;
 }
 
-bool Window::InitInstance(HINSTANCE hInstance, int nCmdShow)
+bool Window::RegisterCreate(HINSTANCE hInstance)
 {
 	if (!RegisterClass())
 	{
@@ -163,19 +166,32 @@ bool Window::InitInstance(HINSTANCE hInstance, int nCmdShow)
 	// store the this pointer so Window::WndProc doesn't need to be static
 	SetWindowLongPtr(_hWnd, GWLP_USERDATA, (LONG_PTR)this);
 
+	return true;
+}
+
+bool Window::CreateChildren()
+{
 	// Setup the status bar with 3 panes, 1: 50%, 2: 25%, 3: 25%
 	vector<float> panes({ 0.50, 0.25, 0.25 });
-	_statusbar.Initialize(_hInstance, _hWnd, panes);
-	_statusbar.Create();
+	
+	if (!_statusbar.Initialize(_hInstance, _hWnd, panes))
+	{
+		return false;
+	}
 
-	ShowWindow(_hWnd, nCmdShow);
-	UpdateWindow(_hWnd);
+	if (!_statusbar.Create())
+	{
+		return false;
+	}
 
 	return true;
 }
 
-int Window::Go()
+int Window::Go(int nCmdShow)
 {
+	ShowWindow(_hWnd, nCmdShow);
+	UpdateWindow(_hWnd);
+
 	MSG msg;
 	while (GetMessage(&msg, nullptr, 0, 0))
 	{

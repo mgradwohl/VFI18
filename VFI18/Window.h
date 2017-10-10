@@ -1,5 +1,15 @@
 #include "StatusBar.h"
 
+struct CLASSATTRIBS
+{
+	WORD idIcon;
+	WORD idSmallIcon;
+	WORD idMenu;
+	WORD idAccelerators;
+	WORD idClass;
+	WORD idTitle;
+};
+
 class Window
 {
 public:
@@ -7,9 +17,10 @@ public:
 	~Window();
 
 	// 
-	bool SetWindowClassAttributes(WORD idIcon, WORD idSmallIcon, WORD idMenu, WORD idAccelerators, WORD idClass, WORD idTitle);
-	bool InitInstance(HINSTANCE hInstance, int nCmdShow);
-	int Go();
+	bool SetWindowClassAttributes(CLASSATTRIBS* classattribs);
+	bool RegisterCreate(HINSTANCE hInstance);
+	virtual bool CreateChildren();
+	int Go(int nCmdShow);
 
 	// WM_ handlers
 	virtual void OnPaint();

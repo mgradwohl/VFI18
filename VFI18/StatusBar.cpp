@@ -21,7 +21,7 @@ bool StatusBar::Initialize(HINSTANCE hInstance, HWND hWndParent, vector<float>& 
 	LPWSTR pszBuffer = nullptr;
 
 	_strIdle.clear();
-	if (size_t length = ::LoadStringW(_hInstance, IDS_STATUSIDLE, (LPWSTR)&pszBuffer, 0))
+	if (size_t length = ::LoadStringW(_hInstance, STRING_STATUSIDLE, (LPWSTR)&pszBuffer, 0))
 	{
 		_strIdle.assign(pszBuffer, length);
 	}
@@ -52,7 +52,7 @@ void StatusBar::Resize(int Width)
 	int w = 0;
 	for (vector<float>::iterator it = _panes.begin(); it != _panes.end(); ++it)
 	{
-		w += *it * Width;
+		w += int(*it * Width);
 		panes.push_back(w);
 	}
 

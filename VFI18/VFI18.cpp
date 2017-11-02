@@ -12,17 +12,30 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-	Window appWindow(hInstance);
+    Window appWindow(hInstance);
 
-	if (!appWindow.SetWindowClassAttributes(IDI_VFI18, IDI_SMALL, IDC_VFI18, IDC_VFI18, IDS_APP_TITLE, IDC_VFI18))
-	{
-		return FALSE;
-	}
+    CLASSATTRIBS classattribs;
+    classattribs.idIcon = ICON_LARGE_VFI18;
+    classattribs.idSmallIcon = ICON_SMALL_VFI18;
+    classattribs.idMenu = MENU_VFI18;
+    classattribs.idAccelerators = ACCELERATORS_VFI18;
+    classattribs.idClass = STRING_CLASS;
+    classattribs.idTitle = STRING_TITLE;
 
-	if (!appWindow.InitInstance(hInstance, nCmdShow))
-	{
-		return FALSE;
-	}
+    if (!appWindow.SetWindowClassAttributes(&classattribs))
+    {
+        return FALSE;
+    }
 
-	return appWindow.Go();
+    if (!appWindow.RegisterCreate(hInstance))
+    {
+        return FALSE;
+    }
+
+    if (!appWindow.CreateChildren())
+    {
+        return FALSE;
+    }
+
+    return appWindow.Go(nCmdShow);
  }

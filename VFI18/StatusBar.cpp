@@ -21,7 +21,7 @@ bool StatusBar::Initialize(HINSTANCE hInstance, HWND hWndParent, std::vector<flo
 	LPWSTR pszBuffer = nullptr;
 
 	_strIdle.clear();
-	if (size_t length = ::LoadStringW(_hInstance, IDS_STATUSIDLE, (LPWSTR)&pszBuffer, 0))
+	if (size_t length = ::LoadStringW(_hInstance, STRING_STATUSIDLE, (LPWSTR)&pszBuffer, 0))
 	{
 		_strIdle.assign(pszBuffer, length);
 	}

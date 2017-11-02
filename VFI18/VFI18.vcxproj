@@ -102,7 +102,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>shlwapi.lib;Mincore.lib;Comctl32.lib;Imagehlp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -119,7 +119,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>shlwapi.lib;Mincore.lib;Comctl32.lib;Imagehlp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -139,6 +139,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>shlwapi.lib;Mincore.lib;Comctl32.lib;Imagehlp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -158,22 +159,33 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>shlwapi.lib;Mincore.lib;Comctl32.lib;Imagehlp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AboutBox.h" />
-    <ClInclude Include="ListVIew.h" />
+    <ClInclude Include="DialogBox.h" />
+    <ClInclude Include="FileVersion.h" />
+    <ClInclude Include="ListView.h" />
+    <ClInclude Include="MyList.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="StatusBar.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="TCodePage.h" />
+    <ClInclude Include="TEvent.h" />
+    <ClInclude Include="TGuid.h" />
     <ClInclude Include="Toolbar.h" />
+    <ClInclude Include="trace.h" />
     <ClInclude Include="VFI18.h" />
     <ClInclude Include="Window.h" />
+    <ClInclude Include="WiseFile.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AboutBox.cpp" />
+    <ClCompile Include="DialogBox.cpp" />
+    <ClCompile Include="FileVersion.cpp" />
+    <ClCompile Include="helpers.cpp" />
     <ClCompile Include="ListView.cpp" />
+    <ClCompile Include="MyList.cpp" />
     <ClCompile Include="StatusBar.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -182,8 +194,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Toolbar.cpp" />
+    <ClCompile Include="trace.cpp" />
     <ClCompile Include="VFI18.cpp" />
     <ClCompile Include="Window.cpp" />
+    <ClCompile Include="WiseFile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="VFI18.rc" />
@@ -191,6 +205,9 @@
   <ItemGroup>
     <Image Include="small.ico" />
     <Image Include="VFI18.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="helpers.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -14,11 +14,16 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <algorithm>
 
 #include <CommCtrl.h>
-
-using namespace std;
+#include <commdlg.h>
+#include <shlwapi.h>
+#include <ShlObj.h>
 
 #include "resource.h"
+#include "helpers.h"
+#include "mylist.h"
+#include "trace.h"
 
 // TODO: reference additional headers your program requires here

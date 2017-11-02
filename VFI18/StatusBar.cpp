@@ -13,7 +13,7 @@ StatusBar::~StatusBar()
 {
 }
 
-bool StatusBar::Initialize(HINSTANCE hInstance, HWND hWndParent, vector<float>& panes)
+bool StatusBar::Initialize(HINSTANCE hInstance, HWND hWndParent, std::vector<float>& panes)
 {
 	_hInstance = hInstance;
 	_panes = panes;
@@ -48,11 +48,11 @@ bool StatusBar::Create()
 
 void StatusBar::Resize(int Width)
 {
-	vector<int> panes;
+	std::vector<int> panes;
 	int w = 0;
-	for (vector<float>::iterator it = _panes.begin(); it != _panes.end(); ++it)
+	for (std::vector<float>::iterator it = _panes.begin(); it != _panes.end(); ++it)
 	{
-		w += *it * Width;
+		w += *it * (int)Width;
 		panes.push_back(w);
 	}
 

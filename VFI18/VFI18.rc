@@ -46,6 +46,7 @@ BEGIN
     POPUP "&File"
     BEGIN
         MENUITEM "E&xit",                       IDM_EXIT
+        MENUITEM "&Add",                        ID_FILE_ADD
     END
     POPUP "&Help"
     BEGIN
@@ -143,6 +144,28 @@ BEGIN
     IDS_APP_TITLE           "VFI18"
     IDS_STATUSIDLE          "Ready"
     IDC_VFI18               "VFI18"
+END
+
+STRINGTABLE
+BEGIN
+    STR_FLAG_DEBUG          "Debug (Present)"
+    STR_FLAG_PRERELEASE     "Prerelease"
+    STR_FLAG_PATCHED        "Patched"
+END
+
+STRINGTABLE
+BEGIN
+    STR_FLAG_PRIVATEBUILD   "Private Build"
+    STR_FLAG_INFOINFERRED   "Info Inferred"
+    STR_FLAG_SPECIALBUILD   "Special Build"
+    STR_FLAG_DEBUG_STRIPPED "Debug (Stripped)"
+END
+
+STRINGTABLE
+BEGIN
+    STR_CRC_ERROR           "Error"
+    STR_CRC_PENDING         "Pending"
+    STR_CRC_WORKING         "Working"
 END
 
 #endif    // English (United States) resources

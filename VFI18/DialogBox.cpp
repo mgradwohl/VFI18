@@ -1,22 +1,22 @@
 #include "stdafx.h"
-#include "AboutBox.h"
+#include "DialogBox.h"
 
-AboutBox::AboutBox()
+MyDialogBox::MyDialogBox()
 {
 }
 
-AboutBox::~AboutBox()
+MyDialogBox::~MyDialogBox()
 {
 }
 
-INT_PTR CALLBACK AboutBox::StaticAboutDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK MyDialogBox::StaticAboutDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if (message == WM_INITDIALOG)
 	{
 		SetWindowLongPtr(hDlg, GWLP_USERDATA, lParam);
 	}
 
-	AboutBox* pThis = (AboutBox*)GetWindowLongPtr(hDlg, GWLP_USERDATA);
+	MyDialogBox* pThis = (MyDialogBox*)GetWindowLongPtr(hDlg, GWLP_USERDATA);
 	if (pThis != NULL)
 	{
 		return pThis->AboutDialogProc(hDlg, message, wParam, lParam);
@@ -27,18 +27,18 @@ INT_PTR CALLBACK AboutBox::StaticAboutDialogProc(HWND hDlg, UINT message, WPARAM
 	}
 }
 
-void AboutBox::Create(HINSTANCE hInstance, HWND hParent )
+void MyDialogBox::Create(HINSTANCE hInstance, HWND hParent )
 {
-	DialogBoxParamW(hInstance, MAKEINTRESOURCE(IDD_ABOUTBOX), hParent, &AboutBox::StaticAboutDialogProc, (LPARAM)this);
+	DialogBoxParamW(hInstance, MAKEINTRESOURCE(IDD_ABOUTBOX), hParent, &MyDialogBox::StaticAboutDialogProc, (LPARAM)this);
 }
 
-INT_PTR AboutBox::OnInitDialog(HWND hDlg)
+INT_PTR MyDialogBox::OnInitDialog(HWND hDlg)
 {
 	_hWnd = hDlg;
 	return (INT_PTR)TRUE;
 }
 
-INT_PTR CALLBACK AboutBox::AboutDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK MyDialogBox::AboutDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{

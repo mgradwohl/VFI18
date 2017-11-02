@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "window.h"
-#include "AboutBox.h"
+#include "DialogBox.h"
 #include "StatusBar.h"
 
 Window::Window(HINSTANCE hInstance)
@@ -62,13 +62,28 @@ void Window::OnSize(int Width)
 	_statusbar.Resize(Width);
 }
 
+void Window::OnFileAdd()
+{
+	std::wstring strFile;
+	OpenBox(_hWnd, L"Choose a file", L"*.*", strFile, NULL, OFN_FILEMUSTEXIST | OFN_FORCESHOWHIDDEN | OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY);
+
+	spWiseFile pfile(new CWiseFile(strFile));
+
+	_list.AddTail(pfile);
+}
+
 LRESULT CALLBACK Window::OnCommand(HWND hwndCtrl, int id, UINT codeNotify)
 {
 	switch (id)
 	{
+	case ID_FILE_ADD:
+		{
+			OnFileAdd();
+			return 0;
+		}
 		case IDM_ABOUT:
 		{
-			AboutBox aboutBox;
+			MyDialogBox aboutBox;
 			aboutBox.Create(_hInstance, _hWnd);
 			return 0;
 		}
@@ -164,7 +179,7 @@ bool Window::InitInstance(HINSTANCE hInstance, int nCmdShow)
 	SetWindowLongPtr(_hWnd, GWLP_USERDATA, (LONG_PTR)this);
 
 	// Setup the status bar with 3 panes, 1: 50%, 2: 25%, 3: 25%
-	vector<float> panes({ 0.50, 0.25, 0.25 });
+	std::vector<float> panes({ 0.50, 0.25, 0.25 });
 	_statusbar.Initialize(_hInstance, _hWnd, panes);
 	_statusbar.Create();
 
@@ -215,7 +230,7 @@ bool Window::RegisterClass()
 	return true;
 }
 
-int Window::ErrorMessageBox(const DWORD dwError, wstring szMessage)
+int Window::ErrorMessageBox(const DWORD dwError, std::wstring szMessage)
 {
 	LPWSTR pBuffer = nullptr;
 	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
@@ -223,10 +238,10 @@ int Window::ErrorMessageBox(const DWORD dwError, wstring szMessage)
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 		(LPWSTR)&pBuffer, 0, NULL);
 
-	const wstring errortext(L"%s\r\n\r\nError number: %lu\r\n\r\n%s");
+	const std::wstring errortext(L"%s\r\n\r\nError number: %lu\r\n\r\n%s");
 	const size_t bufferlength = szMessage.length() + lstrlen(pBuffer) + errortext.length() + 1;
 
-	wstring buffer;
+	std::wstring buffer;
 	buffer.resize(bufferlength);
 
 	wsprintf(&buffer[0], errortext.c_str(), szMessage.c_str(), dwError, pBuffer);

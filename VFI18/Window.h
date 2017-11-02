@@ -15,26 +15,28 @@ public:
 	virtual void OnPaint();
 	virtual void OnDestroy();
 	void OnSize(int Width);
+	void OnFileAdd();
 	
 	// helpers
-	int ErrorMessageBox(const DWORD dwError, wstring szMessage);
+	int ErrorMessageBox(const DWORD dwError, std::wstring szMessage);
 
 private:
 	bool RegisterClass();
 	static LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+
 	// handlers
 	LRESULT CALLBACK OnCommand(HWND hwndCtrl, int id, UINT codeNotify);
 
 	// members
 	StatusBar _statusbar;
-
+	MyList _list;
 	HWND _hWnd;
 	HINSTANCE _hInstance;
-	wstring _szTitle;
-	wstring _szWindowClass;
-	wstring _szMenuName;
+	std::wstring _szTitle;
+	std::wstring _szWindowClass;
+	std::wstring _szMenuName;
 	HMENU _hMenu;
 	HICON _hIcon;
 	HICON _hSmallIcon;

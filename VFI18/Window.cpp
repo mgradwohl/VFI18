@@ -150,14 +150,14 @@ bool Window::SetWindowClassAttributes(CLASSATTRIBS* classattribs)
 	return true;
 }
 
-bool Window::RegisterCreate(HINSTANCE hInstance)
+bool Window::RegisterCreate(HINSTANCE hInstance, HWND hWnd)
 {
 	if (!RegisterClass())
 	{
 		return false;
 	}
 
-	_hWnd = CreateWindowW(_szWindowClass.c_str(), _szTitle.c_str(), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, _hMenu, _hInstance, nullptr);
+	_hWnd = CreateWindowW(_szWindowClass.c_str(), _szTitle.c_str(), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, hWnd, _hMenu, _hInstance, nullptr);
 	if (!_hWnd)
 	{
 		return false;
@@ -180,6 +180,11 @@ bool Window::CreateChildren()
 	}
 
 	if (!_statusbar.Create())
+	{
+		return false;
+	}
+
+	if (!_listview.RegisterCreate(_hInstance, _hWnd))
 	{
 		return false;
 	}

@@ -26,6 +26,7 @@
 #include "WiseFile.h"
 #include "Imagehlp.h"
 
+#include <cwchar>
 #include <locale>
 #include <codecvt>
 
@@ -1213,7 +1214,7 @@ bool CWiseFile::GetFieldString(std::wstring& strDest, int iField, bool fOptions)
 
 bool CWiseFile::GetShortPath(std::wstring& strDest)
 {
-	if (0 == ::GetShortPathName(_strFullPath.c_str(), &strDest[0], strDest.capacity()))
+	if (0 == ::GetShortPathName(_strFullPath.c_str(), &strDest[0], (DWORD)strDest.capacity()))
 	{
 		return false;
 	}

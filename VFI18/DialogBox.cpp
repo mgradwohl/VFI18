@@ -29,7 +29,7 @@ INT_PTR CALLBACK MyDialogBox::StaticAboutDialogProc(HWND hDlg, UINT message, WPA
 
 void MyDialogBox::Create(HINSTANCE hInstance, HWND hParent )
 {
-	DialogBoxParamW(hInstance, MAKEINTRESOURCE(DIALOG_ABOUTBOX), hParent, &AboutBox::StaticAboutDialogProc, (LPARAM)this);
+	DialogBoxParamW(hInstance, MAKEINTRESOURCE(DIALOG_ABOUTBOX), hParent, &MyDialogBox::StaticAboutDialogProc, (LPARAM)this);
 }
 
 INT_PTR MyDialogBox::OnInitDialog(HWND hDlg)

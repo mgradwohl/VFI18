@@ -20,7 +20,8 @@ bool MyListView::RegisterCreate(HINSTANCE hInstance, HWND hWnd)
 		0, 0, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top,
 		hWnd, nullptr, hInstance, NULL);
 
-	SetWindowLongPtr(_hWnd, GWLP_USERDATA, (LONG_PTR)this);
+	SetLastError(0);
+	return (0 != SetWindowLongPtr(_hWnd, GWLP_USERDATA, (LONG_PTR)this));
 }
 
 LRESULT CALLBACK MyListView::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)

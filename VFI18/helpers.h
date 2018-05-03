@@ -22,8 +22,18 @@
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #pragma once
-
 #include <lmcons.h>		// for UNLEN only
+
+struct CLASSATTRIBS
+{
+	WORD idIcon;
+	WORD idSmallIcon;
+	WORD idMenu;
+	WORD idAccelerators;
+	WORD idClass;
+	WORD idTitle;
+};
+
 
 #define MAX_DRIVE	(_MAX_DRIVE)
 #define MAX_DIR	(_MAX_DIR)

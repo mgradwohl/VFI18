@@ -59,7 +59,8 @@ LRESULT CALLBACK Window::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 
 void Window::OnSize(int Width)
 {
-	_statusbar.Resize(Width);
+	// resize all children
+	//_statusbar.Resize(Width);
 }
 
 void Window::OnFileAdd()
@@ -187,7 +188,7 @@ bool Window::RegisterCreate(HINSTANCE hInstance, HWND hWnd)
 bool Window::CreateChildren()
 {
 	// Setup the status bar with 3 panes, 1: 50%, 2: 25%, 3: 25%
-	vector<float> panes({ 0.50, 0.25, 0.25 });
+	std::vector<float> panes({ 0.50, 0.25, 0.25 });
 	
 	if (!_statusbar.Initialize(_hInstance, _hWnd, panes))
 	{

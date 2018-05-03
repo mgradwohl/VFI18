@@ -1,15 +1,8 @@
-#include "StatusBar.h"
-#include "ListView.h"
+#pragma once
 
-struct CLASSATTRIBS
-{
-	WORD idIcon;
-	WORD idSmallIcon;
-	WORD idMenu;
-	WORD idAccelerators;
-	WORD idClass;
-	WORD idTitle;
-};
+//forwards
+class StatusBar;
+class MyListView;
 
 class Window
 {
@@ -45,11 +38,11 @@ private:
 	// handlers
 	LRESULT CALLBACK OnCommand(HWND hwndCtrl, int id, UINT codeNotify);
 
-	// members
-	StatusBar _statusbar;
+	//list of child windows
+	std::vector<Window> children;
+	//StatusBar _statusbar;
 	MyList _list;
-	HWND _hWnd;
-	HINSTANCE _hInstance;
+
 	std::wstring _szTitle;
 	std::wstring _szWindowClass;
 	std::wstring _szMenuName;

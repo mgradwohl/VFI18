@@ -27,7 +27,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return FALSE;
     }
 
-    if (!appWindow.RegisterCreate(hInstance))
+    if (!appWindow.RegisterCreate(hInstance, nullptr))
     {
         return FALSE;
     }

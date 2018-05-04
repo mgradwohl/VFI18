@@ -177,6 +177,7 @@
     <ClInclude Include="Toolbar.h" />
     <ClInclude Include="trace.h" />
     <ClInclude Include="VFI18.h" />
+    <ClInclude Include="MainWindow.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="WiseFile.h" />
   </ItemGroup>
@@ -196,6 +197,7 @@
     <ClCompile Include="Toolbar.cpp" />
     <ClCompile Include="trace.cpp" />
     <ClCompile Include="VFI18.cpp" />
+    <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="WiseFile.cpp" />
   </ItemGroup>

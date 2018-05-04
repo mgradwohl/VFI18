@@ -1,5 +1,6 @@
 #pragma once
-class MyDialogBox
+#include "Window.h"
+class MyDialogBox : public Window
 {
 public:
 	MyDialogBox();

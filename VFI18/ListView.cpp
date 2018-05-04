@@ -14,14 +14,18 @@ bool MyListView::RegisterCreate(HINSTANCE hInstance, HWND hWnd)
 	InitCommonControlsEx(&icex);
 
 	RECT rcClient;
-	GetClientRect(hWnd, &rcClient);
+	if (0 == GetClientRect(hWnd, &rcClient))
+		return false;
 
 	_hWnd = CreateWindowW(WC_LISTVIEW, L"", WS_CHILD | LVS_REPORT | LVS_EDITLABELS,
 		0, 0, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top,
 		hWnd, nullptr, hInstance, NULL);
 
-	SetLastError(0);
-	return (0 != SetWindowLongPtr(_hWnd, GWLP_USERDATA, (LONG_PTR)this));
+	if (_hWnd == nullptr)
+		return false;
+
+	SetWindowLongPtr(_hWnd, GWLP_USERDATA, (LONG_PTR)this);
+	return true;
 }
 
 LRESULT CALLBACK MyListView::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)

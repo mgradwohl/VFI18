@@ -21,6 +21,7 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
 #include "stdafx.h"
 #include "resource.h"
 #include "WiseFile.h"
@@ -641,13 +642,15 @@ int CWiseFile::GetFullLanguage(std::wstring& strDest, bool bNumeric)
 		GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SLIST, &strSep[0], 2);
 		strSep += L'\0';
 		GetLanguageName(strTemp, m_wLanguage);
-		swprintf_s(&strDest[0], strDest.capacity(), L"%s%s%s\0", strTemp, strSep, (LPCWSTR)m_CodePage);
+
+		swprintf_s(&strDest[0], strDest.capacity(), L"%s%s%s\0", strTemp.c_str(), strSep.c_str(), (LPCWSTR)m_CodePage);
 	}
 	return FWF_SUCCESS;
 }
 
 int CWiseFile::ReadVersionInfo()
 {
+
 	std::wstring wsPath(_strFullPath);
 
 	//setup converter
@@ -1123,6 +1126,7 @@ int CWiseFile::GetFlags(std::wstring& strDest)
 	}
 
 	strDest = _strFlags;
+	return FWF_SUCCESS;
 }
 
 bool CWiseFile::GetLanguageName(std::wstring& strDest, UINT Language)

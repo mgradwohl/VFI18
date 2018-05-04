@@ -1,6 +1,6 @@
 #pragma once
-
-class StatusBar
+#include "Window.h"
+class StatusBar : public Window
 {
 public:
 	StatusBar();

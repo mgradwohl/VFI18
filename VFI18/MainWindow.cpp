@@ -60,7 +60,8 @@ LRESULT CALLBACK MainWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 void MainWindow::OnSize(int Width)
 {
 	// resize all children
-	//_statusbar.Resize(Width);
+	_statusbar.Resize(Width);
+	// todo: resize the listview
 }
 
 void MainWindow::OnFileAdd()

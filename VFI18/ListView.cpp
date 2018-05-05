@@ -11,25 +11,20 @@ bool MyListView::AddFile(std::wstring& strFile)
 	LVITEM item;
 	ZeroMemory(&item, sizeof(LVITEM));
 
-	item.lParam = (LPARAM) pFile.get();
-
 	int iItem = ListView_GetItemCount(_hWnd);
 	item.iItem = iItem;
 	item.iSubItem = 0;
-	item.mask = LVIF_TEXT | LVIF_PARAM | LVIF_DI_SETITEM | LVIF_STATE;
+	item.mask = LVIF_TEXT | LVIF_PARAM;// | LVIF_DI_SETITEM;
+	item.lParam = (LPARAM) pFile.get();
+	item.cchTextMax = 1024;
 
 // test
-	std::wstring path = pFile->GetFullPath();
-	LPWSTR pszPath = &path[0];
-	item.pszText = pszPath; //LPSTR_TEXTCALLBACK;
+	//std::wstring path = pFile->GetFullPath();
+	//LPWSTR pszPath = &path[0];
+	//item.pszText = pszPath; //LPSTR_TEXTCALLBACK;
 
-//	item.pszText = LPSTR_TEXTCALLBACK;
+	item.pszText = LPSTR_TEXTCALLBACK;
 
-	item.cchTextMax = 1024;
-	item.stateMask = 0;
-	item.state = 0;
-
-	int iSubItem = 1;
 	iItem = ListView_InsertItem(_hWnd, &item);
 
 	if (-1 == iItem)

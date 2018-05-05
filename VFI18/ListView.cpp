@@ -8,21 +8,29 @@
 bool MyListView::AddFile(std::wstring& strFile)
 {
 	spWiseFile pFile(new CWiseFile(strFile));
-	spLVItem pItem(new LVITEM);
+	LVITEM item;
+	ZeroMemory(&item, sizeof(LVITEM));
 
-	pItem->lParam = (LPARAM) pFile.get();
+	item.lParam = (LPARAM) pFile.get();
 
 	int iItem = ListView_GetItemCount(_hWnd);
-	pItem->iItem = iItem;
-	pItem->iSubItem = 0;
-	pItem->mask = LVIF_TEXT | LVIF_PARAM | LVIF_DI_SETITEM | LVIF_STATE;
-	pItem->pszText = LPSTR_TEXTCALLBACK;
-	pItem->cchTextMax = 1024;
-	pItem->stateMask = 0;
-	pItem->state = 0;
+	item.iItem = iItem;
+	item.iSubItem = 0;
+	item.mask = LVIF_TEXT | LVIF_PARAM | LVIF_DI_SETITEM | LVIF_STATE;
+
+// test
+	std::wstring path = pFile->GetFullPath();
+	LPWSTR pszPath = &path[0];
+	item.pszText = pszPath; //LPSTR_TEXTCALLBACK;
+
+//	item.pszText = LPSTR_TEXTCALLBACK;
+
+	item.cchTextMax = 1024;
+	item.stateMask = 0;
+	item.state = 0;
 
 	int iSubItem = 1;
-	iItem = ListView_InsertItem(_hWnd, pItem.get());
+	iItem = ListView_InsertItem(_hWnd, &item);
 
 	if (-1 == iItem)
 	{
@@ -68,7 +76,11 @@ bool MyListView::RegisterCreate(HINSTANCE hInstance, HWND hWnd)
 	dwExStyle = LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT;
 	ListView_SetExtendedListViewStyle(_hWnd, dwExStyle);
 
-	SetWindowSubclass(_hWnd, MyListView::StaticSubClass, 1, 0);
+	if (!SetWindowSubclass(_hWnd, MyListView::StaticSubClass, 1, 0))
+	{
+		TRACE(L">> ListView subclass failed\r\n");
+		return false;
+	}
 
 	//COLORREF color = RGB(192, 192, 255);
 	//ListView_SetBkColor(_hWnd, color);

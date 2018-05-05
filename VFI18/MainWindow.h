@@ -19,18 +19,16 @@ public:
 	// WM_ handlers
 	virtual void OnPaint();
 	void OnDestroy();
-	void OnSize(int Width);
+	void OnSize();
 	void OnFileAdd();
 	
 	// helpers
 	int ErrorMessageBox(const DWORD dwError, std::wstring szMessage);
 
-
 private:
 	bool RegisterClass();
 	static LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	virtual LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
 
 	// handlers
 	LRESULT CALLBACK OnCommand(HWND hwndCtrl, int id, UINT codeNotify);

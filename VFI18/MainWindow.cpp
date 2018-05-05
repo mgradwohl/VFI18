@@ -32,7 +32,9 @@ LRESULT CALLBACK MainWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 	{
 		case WM_PAINT:
 		{
-			OnPaint();
+			return DefWindowProc(hWnd, msg, wParam, lParam);
+
+//			OnPaint();
 			break;
 		}
 		case WM_DESTROY:
@@ -42,7 +44,7 @@ LRESULT CALLBACK MainWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		}
 		case WM_SIZE:
 		{
-			OnSize(LOWORD(lParam));
+			OnSize();
 			break;
 		}
 		case WM_COMMAND:
@@ -57,12 +59,11 @@ LRESULT CALLBACK MainWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 	return 0;
 }
 
-void MainWindow::OnSize(int Width)
+void MainWindow::OnSize()
 {
 	// resize all children
-	_statusbar.Resize(Width);
+	_statusbar.Resize();
 	_listview.Resize();
-	// todo: resize the listview
 }
 
 void MainWindow::OnFileAdd()
@@ -71,6 +72,7 @@ void MainWindow::OnFileAdd()
 	OpenBox(_hWnd, L"Choose a file", L"*.*", strFile, NULL, OFN_FILEMUSTEXIST | OFN_FORCESHOWHIDDEN | OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY);
 
 	_listview.AddFile(strFile);
+	_statusbar.UpdateFileCount(_listview.GetItemCount());
 }
 
 LRESULT CALLBACK MainWindow::OnCommand(HWND hwndCtrl, int id, UINT codeNotify)
@@ -143,18 +145,6 @@ bool MainWindow::SetWindowClassAttributes(CLASSATTRIBS* classattribs)
 	_szMenuName.clear();
 	if (classattribs->idMenu != 0)
 	{
-		// you actually don't need a menu name at all, just load the resource
-
-		//if (size_t length = ::LoadString(_hInstance, classattribs->idMenu, (LPWSTR)&pszBuffer, 0))
-		//{
-		//	_szMenuName.assign(pszBuffer, length);
-		//}
-		//else
-		//{
-		//	ErrorMessageBox(::GetLastError(), L"LoadMenu failed");
-		//	return false;
-		//}
-
 		_hMenu = ::LoadMenu(_hInstance, MAKEINTRESOURCE(classattribs->idMenu));
 		if (_hMenu == NULL)
 		{
@@ -172,7 +162,7 @@ bool MainWindow::RegisterCreate(HINSTANCE hInstance, HWND hWnd)
 	{
 		return false;
 	}
-
+	_hWndParent = hWnd;
 	_hWnd = CreateWindowW(_szWindowClass.c_str(), _szTitle.c_str(), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, hWnd, _hMenu, _hInstance, nullptr);
 	if (!_hWnd)
 	{
@@ -187,6 +177,11 @@ bool MainWindow::RegisterCreate(HINSTANCE hInstance, HWND hWnd)
 
 bool MainWindow::CreateChildren()
 {
+	if (!_listview.RegisterCreate(_hInstance, _hWnd))
+	{
+		return false;
+	}
+
 	// Setup the status bar with 3 panes, 1: 50%, 2: 25%, 3: 25%
 	std::vector<float> panes({ 0.50, 0.25, 0.25 });
 	
@@ -196,11 +191,6 @@ bool MainWindow::CreateChildren()
 	}
 
 	if (!_statusbar.Create())
-	{
-		return false;
-	}
-
-	if (!_listview.RegisterCreate(_hInstance, _hWnd))
 	{
 		return false;
 	}
@@ -230,9 +220,7 @@ bool MainWindow::RegisterClass()
 {
 	WNDCLASSEXW wcex;
 	ZeroMemory(&wcex, sizeof(WNDCLASSEXW));
-
 	wcex.cbSize = sizeof(WNDCLASSEX);
-
 	wcex.style = CS_HREDRAW | CS_VREDRAW;
 	wcex.lpfnWndProc = &MainWindow::StaticWndProc;
 	wcex.cbClsExtra = 0;

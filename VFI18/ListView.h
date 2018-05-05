@@ -1,4 +1,5 @@
 #pragma once
+
 #include "window.h"
 
 typedef std::shared_ptr<CWiseFile> spWiseFile;
@@ -8,7 +9,7 @@ class MyListView : public Window
 {
 public:
 	bool RegisterCreate(HINSTANCE hInstance, HWND hWnd);
-	bool CreateChildren();
+	unsigned int GetItemCount();
 	bool AddFile(std::wstring& strFile);
 
 private:

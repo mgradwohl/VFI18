@@ -1,5 +1,7 @@
 #pragma once
+
 #include "Window.h"
+
 class StatusBar : public Window
 {
 public:
@@ -8,12 +10,12 @@ public:
 
 	bool Initialize(HINSTANCE hInstance, HWND hWndParent, std::vector<float>& panes);
 	bool Create();
-	void Resize(int Width);
+	void Resize();
+	bool UpdateFileCount(unsigned int i);
+	unsigned int GetHeight();
+
 
 private:
-	HWND _hWnd;
-	HWND _hWndParent;
-	HINSTANCE _hInstance;
 	std::wstring _strIdle;
 	std::vector<float> _panes;
 };

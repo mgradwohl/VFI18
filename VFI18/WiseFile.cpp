@@ -21,7 +21,6 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
 #include "stdafx.h"
 #include "resource.h"
 #include "WiseFile.h"
@@ -31,7 +30,6 @@
 #include <locale>
 #include <codecvt>
 
-// CWiseFile::CWiseFile
 CWiseFile::CWiseFile()
 {
 	Init();
@@ -44,8 +42,6 @@ CWiseFile::CWiseFile(const CWiseFile& rwf)
 	Copy(rwf);
 }
 
-// CWiseFile::CWiseFile
-// Param:   LPCWSTR pszFileSpec
 CWiseFile::CWiseFile(std::wstring& strFile)
 {
 	Init();
@@ -58,15 +54,11 @@ CWiseFile::CWiseFile(std::wstring& strFile)
 	SetState(FWFS_VALID);
 }
 
-// CWiseFile::~CWiseFile
 CWiseFile::~CWiseFile()
 {
 	SetState(FWFS_INVALID);
 }
 
-// CWiseFile::Attach
-// Returns: bool 
-// Param:   LPCWSTR pszFileSpec
 bool CWiseFile::Attach(std::wstring& strFile)
 {
 	if (0 == _wcsnicmp(strFile.c_str(), L"\\\\?\\", 4))
@@ -122,7 +114,11 @@ bool CWiseFile::Attach(std::wstring& strFile)
 		&_strName[0], _strName.capacity(),
 		&strExt[0], strExt.capacity()))
 	{
-		TRACE(L"splitpath failed\r\n");
+		TRACE(L">> splitpath failed\r\n");
+		strDrive = L"DRIVE:";
+		strDir = L"DIRECTORY";
+		_strName = L"NAME";
+		_strExt = L"EXT";
 	}
 
 	_strExt = strExt.substr(1, strExt.length() - 1);

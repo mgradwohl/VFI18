@@ -10,18 +10,20 @@
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 #define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 
-// Windows Header Files:
+// Windows head files
 #include <windows.h>
-#include <string>
-#include <memory>
-#include <vector>
-#include <algorithm>
-
 #include <CommCtrl.h>
 #include <commdlg.h>
 #include <shlwapi.h>
 #include <ShlObj.h>
 
+// std header files
+#include <string>
+#include <memory>
+#include <vector>
+#include <algorithm>
+
+// project header files
 #include "resource.h"
 #include "helpers.h"
 #include "mylist.h"

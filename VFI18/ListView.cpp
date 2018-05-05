@@ -10,85 +10,81 @@ bool MyListView::AddFile(std::wstring& strFile)
 	spWiseFile pFile(new CWiseFile(strFile));
 	spLVItem pItem(new LVITEM);
 
-	//CWiseFile* pFile = new (CWiseFile);
 	pItem->lParam = (LPARAM) pFile.get();
 
 	int iItem = ListView_GetItemCount(_hWnd);
 	pItem->iItem = iItem;
-
 	pItem->iSubItem = 0;
-	pItem->mask = LVIF_TEXT | LVIF_PARAM | LVIF_DI_SETITEM;
+	pItem->mask = LVIF_TEXT | LVIF_PARAM | LVIF_DI_SETITEM | LVIF_STATE;
 	pItem->pszText = LPSTR_TEXTCALLBACK;
 	pItem->cchTextMax = 1024;
-
-	iItem = ListView_InsertItem(_hWnd, pItem.get());
+	pItem->stateMask = 0;
+	pItem->state = 0;
 
 	int iSubItem = 1;
+	iItem = ListView_InsertItem(_hWnd, pItem.get());
+
 	if (-1 == iItem)
 	{
-		//adding failed
+		TRACE(L">> Adding failed.\r\n");
 		return false;
 	}
-	else
-	{
-		for (iSubItem = 1; iSubItem < LIST_NUMCOLUMNS; iSubItem++)
-		{
-
-			ListView_SetItemText(_hWnd, iItem, iSubItem, LPSTR_TEXTCALLBACK)
-		}
-	}
-
-	ListView_Update(_hWnd, iItem);
 
 	return true;
 }
 
 bool MyListView::RegisterCreate(HINSTANCE hInstance, HWND hWnd)
 {
+	INITCOMMONCONTROLSEX icex;
+	icex.dwICC = ICC_LISTVIEW_CLASSES;
+	InitCommonControlsEx(&icex);
+
 	if (hWnd == NULL)
 	{
 		// must have a parent
 		return false;
 	}
-
-	INITCOMMONCONTROLSEX icex;
-	icex.dwICC = ICC_LISTVIEW_CLASSES;
-	InitCommonControlsEx(&icex);
+	_hWndParent = hWnd;
 
 	RECT rcClient;
-	if (0 == GetClientRect(hWnd, &rcClient))
+	if (0 == GetClientRect(_hWndParent, &rcClient))
+	{
 		return false;
+	}
 
-	_hWnd = CreateWindowW(WC_LISTVIEW, L"", WS_CHILD | LVS_REPORT | LVS_EDITLABELS | LVS_SHOWSELALWAYS | LVS_AUTOARRANGE,
+	_hWnd = CreateWindow(WC_LISTVIEW, L"", WS_CHILD | LVS_REPORT /*| LVS_EDITLABELS*/ | LVS_SHOWSELALWAYS | LVS_AUTOARRANGE /*| LVS_OWNERDATA*/,
 		0, 0, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top,
-		hWnd, nullptr, hInstance, NULL);
+		_hWndParent, nullptr, hInstance, NULL);
 
 	if (_hWnd == nullptr)
+	{
 		return false;
-
+	}
 	SetWindowLongPtr(_hWnd, GWLP_USERDATA, (LONG_PTR)this);
 
-	DWORD dwExStyle = LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT;
-	dwExStyle &= ~WS_EX_DLGMODALFRAME;
+	InitColumns();
+
+	DWORD dwExStyle = ListView_GetExtendedListViewStyle(_hWnd);
+	dwExStyle = LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT;
 	ListView_SetExtendedListViewStyle(_hWnd, dwExStyle);
 
 	SetWindowSubclass(_hWnd, MyListView::StaticSubClass, 1, 0);
 
-	InitColumns();
+	//COLORREF color = RGB(192, 192, 255);
+	//ListView_SetBkColor(_hWnd, color);
 
 	ShowWindow(_hWnd, SW_SHOW);
-
+	TRACE(L">> ListView create succeeded\r\n");
 	return true;
+}
+
+unsigned int MyListView::GetItemCount()
+{
+	return ListView_GetItemCount(_hWnd);
 }
 
 LRESULT CALLBACK MyListView::StaticSubClass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
 {
-	if (uMsg == WM_NCDESTROY) {
-		// NOTE: this requirement is NOT stated in the documentation,
-		// but it is stated in Raymond Chen's blog article...
-		RemoveWindowSubclass(hWnd, MyListView::StaticSubClass, uIdSubclass);
-	}
-
 	MyListView *pThis = (MyListView*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 
 	switch (uMsg)
@@ -105,6 +101,12 @@ LRESULT CALLBACK MyListView::StaticSubClass(HWND hWnd, UINT uMsg, WPARAM wParam,
 				}
 			}
 		}
+
+		case WM_NCDESTROY:
+		{
+			TRACE(L">> Destroying ListView\r\n");
+			//RemoveWindowSubclass(hWnd, MyListView::StaticSubClass, uIdSubclass);
+		}
 	}
 
 	return DefSubclassProc(hWnd, uMsg, wParam, lParam);
@@ -117,16 +119,16 @@ bool MyListView::InitColumns()
 	WCHAR szText[LIST_MAXHEADLENGTH];
 
 	lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
-	lvc.pszText = szText;
 
 	for (unsigned int iCol = 0; iCol < LIST_NUMCOLUMNS; iCol++)
 	{
+		lvc.pszText = szText;
 		wsprintf(szText, L"Column %u", iCol);
 		lvc.iSubItem = iCol;
-
+		lvc.cx = 100;
 		if (-1 == ListView_InsertColumn(_hWnd, iCol, &lvc))
 		{
-			TRACE(L"Add column failed");
+			TRACE(L">> Add column failed\r\n");
 		}
 	}
 
@@ -135,47 +137,13 @@ bool MyListView::InitColumns()
 
 bool MyListView::OnGetDispInfo(NMLVDISPINFO* plvdi)
 {
-	// get the item
-	//LVITEM* pItem = plvdi->item;
 	CWiseFile* pFile = (CWiseFile*)plvdi->item.lParam;
 
 	std::wstring tmp = pFile->GetName();
 	LPWSTR ptmp = &tmp[0];
 
-	plvdi->item.pszText = ptmp;
-
 	return true;
 }
-
-//LRESULT CALLBACK MyListView::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
-//{
-//	switch (msg)
-//	{
-//		//case WM_PAINT:
-//		//{
-//		//	OnPaint();
-//		//	break;
-//		//}
-//		case WM_NOTIFY:
-//		{
-//			switch (((LPNMHDR)lParam)->code)
-//			{
-//				case LVN_GETDISPINFO:
-//				{
-//					NMLVDISPINFO* plvdi = (NMLVDISPINFO*)lParam;
-//					OnGetDispInfo(plvdi);
-//					break;
-//				}
-//			}
-//		}
-//		default:
-//		{
-//			return DefWindowProc(hWnd, msg, wParam, lParam);
-//		}
-//	};
-//
-//	return 0;
-//}
 
 //void MyListView::OnPaint()
 //{
@@ -187,10 +155,8 @@ bool MyListView::OnGetDispInfo(NMLVDISPINFO* plvdi)
 
 bool MyListView::Resize()
 {
-	HWND hWndParent = GetParent(_hWnd);
 	RECT rect;
-	GetClientRect(hWndParent, &rect);
-
-	// TODO: Add your implementation code here.
+	GetClientRect(_hWndParent, &rect);
+	SetWindowPos(_hWnd, 0, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, SWP_NOZORDER);
 	return true;
 }

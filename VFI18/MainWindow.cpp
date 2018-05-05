@@ -61,6 +61,7 @@ void MainWindow::OnSize(int Width)
 {
 	// resize all children
 	_statusbar.Resize(Width);
+	_listview.Resize();
 	// todo: resize the listview
 }
 
@@ -69,9 +70,7 @@ void MainWindow::OnFileAdd()
 	std::wstring strFile;
 	OpenBox(_hWnd, L"Choose a file", L"*.*", strFile, NULL, OFN_FILEMUSTEXIST | OFN_FORCESHOWHIDDEN | OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY);
 
-	spWiseFile pfile(new CWiseFile(strFile));
-
-	_list.AddTail(pfile);
+	_listview.AddFile(strFile);
 }
 
 LRESULT CALLBACK MainWindow::OnCommand(HWND hwndCtrl, int id, UINT codeNotify)

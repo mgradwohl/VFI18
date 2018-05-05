@@ -126,7 +126,6 @@ bool CWiseFile::Attach(std::wstring& strFile)
 	}
 
 	_strExt = strExt.substr(1, strExt.length() - 1);
-//	_strExt = strExt.substr(1, std::wstring::npos);
 	
 	_strPath.assign(strDrive);
 	_strPath.append(strDir);

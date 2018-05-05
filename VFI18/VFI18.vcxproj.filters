@@ -125,5 +125,6 @@
     <None Include="helpers.h">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

@@ -35,7 +35,6 @@ struct CLASSATTRIBS
 	WORD idTitle;
 };
 
-
 #define MAX_DRIVE	(_MAX_DRIVE)
 #define MAX_DIR	(_MAX_DIR)
 #define MAX_FNAME	(_MAX_FNAME)
@@ -59,6 +58,7 @@ static const size_t maxExtendedPathLength = 0x7FFF - 24;
 #define zero(x)			(::SecureZeroMemory((LPVOID)&x, sizeof(x)))
 
 bool LoadWstring(std::wstring& strDest, UINT id);
+bool LoadSZstring(LPWSTR szOut, UINT id);
 
 // Get number as a string
 bool int2wstr(std::wstring& strDest, QWORD i);
@@ -80,4 +80,3 @@ bool PathGetFolder(LPWSTR pszFileSpec);
 bool PathGetFileName(LPWSTR pszFileSpec);
 
 bool OpenBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, std::wstring& strFile, LPWSTR pszFolder, const DWORD dwFlags);
-

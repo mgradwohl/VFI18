@@ -6,8 +6,9 @@ public:
 	Window();
 	~Window();
 
-protected:
 	HWND _hWnd;
+
+protected:
 	HWND _hWndParent;
 	HINSTANCE _hInstance;
 };

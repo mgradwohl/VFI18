@@ -13,6 +13,17 @@ bool LoadWstring(std::wstring& strDest, UINT id)
 	return false;
 }
 
+bool LoadSZstring(LPWSTR szOut, UINT id)
+{
+	LPWSTR pszBuffer = nullptr;
+	if (size_t length = ::LoadString(GetModuleHandle(NULL), id, szOut, 0))
+	{
+		return true;
+	}
+
+	return false;
+}
+
 // Get number as a string
 bool int2wstr(std::wstring& strDest, QWORD i)
 {

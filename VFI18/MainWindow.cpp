@@ -16,7 +16,7 @@ LRESULT MainWindow::StaticWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 {
 	MainWindow *pThis = (MainWindow*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 
-	if (pThis != NULL)
+	if (pThis != nullptr)
 	{
 		return pThis->WndProc(hWnd, msg, wParam, lParam);
 	}
@@ -42,6 +42,13 @@ LRESULT CALLBACK MainWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 			OnDestroy();
 			break;
 		}
+		case WM_NOTIFY:
+		{
+			TRACE(L">> MainWindow forward WM_NOTIFY\r\n");
+			FORWARD_WM_NOTIFY(_listview._hWnd, wParam, (NMHDR*)lParam, SendMessage);
+			break;
+		}
+
 		case WM_SIZE:
 		{
 			OnSize();
@@ -49,7 +56,7 @@ LRESULT CALLBACK MainWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		}
 		case WM_COMMAND:
 		{
-			OnCommand((HWND)lParam, LOWORD(wParam), HIWORD(wParam));
+			return OnCommand((HWND)lParam, LOWORD(wParam), HIWORD(wParam));
 		}
 		default:
 		{

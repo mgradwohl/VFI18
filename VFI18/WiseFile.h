@@ -50,146 +50,190 @@ enum FileStates
 #define FWF_ERR_LOWMEMORY		-7;
 #define FWF_ERR_OTHER			-64;
 
-// strings
-static const std::wstring strVOS_UNKNOWN(L"VOS_UNKNOWN: 0x%08x");
-static const std::wstring strVOS_DOS(L"VOS_DOS");
-static const std::wstring strVOS_OS216(L"VOS_OS216");
-static const std::wstring strVOS_OS232(L"VOS_OS232");
-static const std::wstring strVOS_NT(L"VOS_NT");
-static const std::wstring strVOS__WINDOWS16(L"VOS__WINDOWS16");
-static const std::wstring strVOS__PM16(L"VOS__PM16");
-static const std::wstring strVOS__PM32(L"VOS__PM32");
-static const std::wstring strVOS__WINDOWS32(L"VOS__WINDOWS32");
-static const std::wstring strVOS_OS216_PM16(L"VOS_OS216_PM16");
-static const std::wstring strVOS_OS232_PM32(L"VOS_OS232_PM32");
-static const std::wstring strVOS_DOS_WINDOWS16(L"VOS_DOS_WINDOWS16");
-static const std::wstring strVOS_DOS_WINDOWS32(L"VOS_DOS_WINDOWS32");
-static const std::wstring strVOS_NT_WINDOWS32(L"VOS_NT_WINDOWS32");
-static const std::wstring strVOS_RESERVED(L"Reserved: 0x%08x");
-
-//
-static const std::wstring strVFT_UNKNOWN(L"VFT_UNKNOWN: 0x%08x");
-static const std::wstring strVFT_APP(L"VFT_APP");
-static const std::wstring strVFT_DLL(L"VFT_DLL");
-static const std::wstring strVFT_DRV(L"VFT_DRV");
-static const std::wstring strVFT_FONT(L"VFT_FONT");
-static const std::wstring strVFT_VXD(L"VFT_VXD");
-static const std::wstring strVFT_STATIC_LIB(L"VFT_STATIC_LIB");
-static const std::wstring strVFT_RESERVED(L"Reserved: 0x%08x");
-
 class CWiseFile
 {
+
 public:
+	int ReadVersionInfoEx();
+	bool GetShortPath(LPWSTR pszBuf, int cchBuf);
+	LPWSTR GetFieldString(int iField, bool fOptions);
+	bool GetFieldString(LPWSTR pszBuf, int iField, bool fOptions);
 	// construction, destruction
 	CWiseFile();
 	CWiseFile(const CWiseFile& rwf);
-	CWiseFile(std::wstring& strFile);
-
+	CWiseFile(LPCWSTR pszFileSpec);
 	~CWiseFile();
 
 	// initialization, release
-	int Attach();
-	bool Attach(std::wstring& strFile);
+	int Attach(LPCWSTR pszFileName);
 	int Detach();
-
-	int ReadVersionInfoEx();
-	bool GetShortPath(std::wstring& strDest);
-
-	bool GetFieldString(std::wstring& strDest, int iField, bool fOptions);
 
 	const CWiseFile& Copy(const CWiseFile& rwf);
 	const CWiseFile& operator=(const CWiseFile& rwf);
 	bool operator==(const CWiseFile& rwf);
 
 	// access members
-	void GetFullPath(std::wstring& strDest)
+	int GetFullPath(LPWSTR pszText)
 	{
-		strDest = _strFullPath;
-	}
-
-	std::wstring GetFullPath()
-	{
-		return _strFullPath;
-	}
-
-	int GetPath(std::wstring& strDest)
-	{
-		strDest = _strPath;
+		wcscpy_s(pszText, MAX_PATH, m_szFullPath);
 		return FWF_SUCCESS;
 	}
 
-	std::wstring GetPath()
+	LPWSTR szGetFullPath()
 	{
-		return _strPath;
+		return m_szFullPath;
 	}
 
-	int GetName(std::wstring strDest)
+	int GetPath(LPWSTR pszText)
 	{
-		strDest = _strName;
+		pszText = m_szPath;
 		return FWF_SUCCESS;
 	}
 
-	std::wstring GetName()
+	LPWSTR szGetPath()
 	{
-		return _strName;
+		return m_szPath;
 	}
 
-	int GetExt(std::wstring strDest)
+	LPWSTR szGetSize()
 	{
-		strDest = _strExt;
+		return m_szSize;
+	}
+
+	LPWSTR szGetCRC()
+	{
+		return m_szCRC;
+	}
+
+	LPWSTR szGetOS()
+	{
+		return m_szOS;
+	}
+
+	LPWSTR szGetType()
+	{
+		return m_szType;
+	}
+
+	LPWSTR szGetDateLastAccess()
+	{
+		return m_szDateLastAccess;
+	}
+	LPWSTR szGetTimeLastAccess()
+	{
+		return m_szTimeLastAccess;
+	}
+	LPWSTR szGetDateCreated()
+	{
+		return m_szDateCreated;
+	}
+	LPWSTR szGetTimeCreated()
+	{
+		return m_szTimeCreated;
+	}
+	LPWSTR szGetDateLastWrite()
+	{
+		return m_szDateLastWrite;
+	}
+	LPWSTR szGetTimeLastWrite()
+	{
+		return m_szTimeLastWrite;
+	}
+	LPWSTR szGetSize64()
+	{
+		return m_szSize;
+	}
+	LPWSTR szGetAttribs()
+	{
+		return m_szAttribs;
+	}
+	LPWSTR szGetFileVersion()
+	{
+		return m_szFileVersion;
+	}
+	LPWSTR szGetProductVersion()
+	{
+		return m_szProductVersion;
+	}
+	LPWSTR szGetLanguage()
+	{
+		return m_szLanguage;
+	}
+	LPWSTR szGetCodePage()
+	{
+		return m_szCodePage;
+	}
+	LPWSTR szGetFlags()
+	{
+		return m_szFlags;
+	}
+
+	int GetName(LPWSTR pszText)
+	{
+		wcscpy_s(pszText, MAX_PATH, m_szName);
 		return FWF_SUCCESS;
 	}
 
-	std::wstring GetExt()
+	LPWSTR szGetName()
 	{
-		return _strExt;
+		return m_szName;
 	}
 
-	void GetShortName(std::wstring strDest)
+	int GetExt(LPWSTR pszText)
 	{
-		strDest = _strShortName;
-	}
-	
-	std::wstring GetShortName()
-	{
-		return _strShortName;
+		wcscpy_s(pszText, MAX_PATH, m_szExt);
+		return FWF_SUCCESS;
 	}
 
-	int GetSize(std::wstring& strDest, bool bHex = false);
+	LPWSTR szGetExt()
+	{
+		return m_szExt;
+	}
 
+	int GetShortName(LPWSTR pszText)
+	{
+		wcscpy_s(pszText, MAX_PATH, m_szShortName);
+		return FWF_SUCCESS;
+	}
+
+	LPWSTR szGetShortName()
+	{
+		return m_szShortName;
+	}
+
+	int GetSize(LPWSTR pszText, bool bHex = false);
 	DWORD GetSize()
 	{
 		return LODWORD(m_qwSize);
 	}
 
-	int GetSize64(std::wstring& strDest, bool bHex = false);
-
+	int GetSize64(LPWSTR pszText, bool bHex = false);
 	QWORD GetSize64()
 	{
 		return m_qwSize;
 	}
 
-	int GetAttribs(std::wstring& strDest);
+	int GetAttribs(LPWSTR pszText);
 	DWORD GetAttribs()
 	{
 		return m_dwAttribs;
 	}
 
-	int GetDateCreation(std::wstring& strDest, bool fLocal = true);
+	int GetDateCreation(LPWSTR pszText, bool fLocal = true);
 	LPSYSTEMTIME GetDateCreation(bool fLocal = true);
-	int GetDateLastAccess(std::wstring& strDest, bool fLocal = true);
+	int GetDateLastAccess(LPWSTR pszText, bool fLocal = true);
 	LPSYSTEMTIME GetDateLastAccess(bool fLocal = true);
-	int GetDateLastWrite(std::wstring& strDest, bool fLocal = true);
+	int GetDateLastWrite(LPWSTR pszText, bool fLocal = true);
 	LPSYSTEMTIME GetDateLastWrite(bool fLocal = true);
 
-	int GetTimeCreation(std::wstring& strDest, bool fLocal = true);
+	int GetTimeCreation(LPWSTR pszText, bool fLocal = true);
 	LPSYSTEMTIME GetTimeCreation(bool fLocal = true);
-	int GetTimeLastAccess(std::wstring& strDest, bool fLocal = true);
+	int GetTimeLastAccess(LPWSTR pszText, bool fLocal = true);
 	LPSYSTEMTIME GetTimeLastAccess(bool fLocal = true);
-	int GetTimeLastWrite(std::wstring& strDest, bool fLocal = true);
+	int GetTimeLastWrite(LPWSTR pszText, bool fLocal = true);
 	LPSYSTEMTIME GetTimeLastWrite(bool fLocal = true);
 
-	int GetFileVersion(std::wstring& strDest);
+	int GetFileVersion(LPWSTR pszText);
 	QWORD GetFileVersion()
 	{
 		return m_qwFileVersion;
@@ -197,7 +241,7 @@ public:
 	int GetFileVersion(LPDWORD pdwHigh, LPDWORD pdwLow);
 	int GetFileVersion(LPWORD pwHighMS, LPWORD pwLowMS, LPWORD pwHighLS, LPWORD pwLowLS);
 
-	int GetProductVersion(std::wstring& strDest);
+	int GetProductVersion(LPWSTR pszText);
 	QWORD GetProductVersion()
 	{
 		return m_qwProductVersion;
@@ -205,41 +249,42 @@ public:
 	int GetProductVersion(LPDWORD pdwMS, LPDWORD pdwLS);
 	int GetProductVersion(LPWORD pwHighMS, LPWORD pwLowMS, LPWORD pwHighLS, LPWORD pwLowLS);
 
-	int GetLanguage(std::wstring& strDest, bool bNumeric = false);
+	bool GetLanguageName(UINT Language, LPWSTR pszBuf);
+	int GetLanguage(LPWSTR pszText, bool bNumeric = false);
 	WORD GetLanguage()
 	{
 		return m_wLanguage;
 	}
 
-	int GetCodePage(std::wstring& strDest, bool bNumeric = false);
+	int GetCodePage(LPWSTR pszText, bool bNumeric = false);
 	const TCodePage& GetCodePage()
 	{
 		return m_CodePage;
 	}
 
-	int GetFullLanguage(std::wstring& strDest, bool bNumeric = false);
+	int GetFullLanguage(LPWSTR pszText, bool bNumeric = false);
 
-	int GetOSString(std::wstring& strDest);
+	int GetOSString(LPWSTR pszText);
 	void GetOSString();
 	DWORD GetOS()
 	{
 		return m_dwOS;
 	}
 
-	int GetTypeString(std::wstring& strDest);
+	int GetTypeString(LPWSTR pszText);
 	void GetTypeString();
 	DWORD GetType()
 	{
 		return m_dwType;
 	}
 
-	int GetFlags(std::wstring& strDest);
+	int GetFlags(LPWSTR pszText);
 	DWORD GetFlags()
 	{
 		return m_dwFlags;
 	}
 
-	int GetCRC(std::wstring& strDest, bool bHex = true);
+	int GetCRC(LPWSTR pszText, bool bHex = true);
 	DWORD GetCRC()
 	{
 		return m_dwCRC;
@@ -273,25 +318,34 @@ public:
 	}
 	// execute helpers
 	int ReadVersionInfo();
-	static bool GetLanguageName(std::wstring& strDest, UINT Language);
 
 private:
-	bool Attach(LPCWSTR pszFileName);
 	bool Init();
 	// Member Variables
 	// Set when a file is added
-
-	std::wstring _strFullPath;
-	std::wstring _strPath;
-	std::wstring _strName;
-	std::wstring _strExt;
-	std::wstring _strShortName;
+	wchar_t		m_szFullPath[_MAX_PATH];
+	wchar_t		m_szPath[_MAX_PATH];
+	wchar_t		m_szName[_MAX_PATH];
+	wchar_t		m_szExt[_MAX_PATH];
+	wchar_t		m_szShortName[14];
 
 	// Set when information requested, if not set
-	std::wstring _strAttribs;
-	std::wstring _strFlags;
-	std::wstring _strOS;
-	std::wstring _strType;
+	wchar_t		m_szAttribs[10];
+	wchar_t		m_szFlags[256];
+	wchar_t		m_szOS[64];
+	wchar_t		m_szType[64];
+	wchar_t		m_szSize[64];
+	wchar_t		m_szDateCreated[64];
+	wchar_t		m_szTimeCreated[64];
+	wchar_t		m_szDateLastAccess[64];
+	wchar_t		m_szTimeLastAccess[64];
+	wchar_t		m_szDateLastWrite[64];
+	wchar_t		m_szTimeLastWrite[64];
+	wchar_t		m_szLanguage[64];
+	wchar_t		m_szCodePage[64];
+	wchar_t		m_szCRC[64];
+	wchar_t		m_szFileVersion[64];
+	wchar_t		m_szProductVersion[64];
 
 	// from WIN32_FIND_DATA
 	DWORD		m_dwAttribs;

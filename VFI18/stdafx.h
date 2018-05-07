@@ -7,7 +7,9 @@
 
 #include "targetver.h"
 
-#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
+// Exclude rarely-used stuff from Windows headers
+#define WIN32_LEAN_AND_MEAN
+#define NOCOMM
 #define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 
 // Windows head files
@@ -28,5 +30,3 @@
 #include "helpers.h"
 #include "mylist.h"
 #include "trace.h"
-
-// TODO: reference additional headers your program requires here

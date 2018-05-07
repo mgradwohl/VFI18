@@ -7,23 +7,19 @@
 
 bool MyListView::AddFile(std::wstring& strFile)
 {
-	spWiseFile pFile(new CWiseFile(strFile));
+	CWiseFile* pFile = new CWiseFile(strFile.c_str());
 	LVITEM item;
 	ZeroMemory(&item, sizeof(LVITEM));
 
 	int iItem = ListView_GetItemCount(_hWnd);
 	item.iItem = iItem;
 	item.iSubItem = 0;
-	item.mask = LVIF_TEXT | LVIF_PARAM;// | LVIF_DI_SETITEM;
-	item.lParam = (LPARAM) pFile.get();
-	item.cchTextMax = 1024;
-
-// test
-	//std::wstring path = pFile->GetFullPath();
-	//LPWSTR pszPath = &path[0];
-	//item.pszText = pszPath; //LPSTR_TEXTCALLBACK;
-
+	item.mask = LVIF_TEXT | LVIF_IMAGE | LVIF_PARAM | LVIF_STATE;
+	item.state = 0;      //
+	item.stateMask = 0;  //
+	item.lParam = (LPARAM) pFile;
 	item.pszText = LPSTR_TEXTCALLBACK;
+	item.cchTextMax = 1024;
 
 	iItem = ListView_InsertItem(_hWnd, &item);
 
@@ -31,6 +27,14 @@ bool MyListView::AddFile(std::wstring& strFile)
 	{
 		TRACE(L">> Adding failed.\r\n");
 		return false;
+	}
+
+	for (int iSubItem = 1; iSubItem < LIST_NUMCOLUMNS; iSubItem++)
+	{
+		ListView_SetItemText(_hWnd,
+			iItem,
+			iSubItem,
+			LPSTR_TEXTCALLBACK);
 	}
 
 	return true;
@@ -55,7 +59,7 @@ bool MyListView::RegisterCreate(HINSTANCE hInstance, HWND hWnd)
 		return false;
 	}
 
-	_hWnd = CreateWindow(WC_LISTVIEW, L"", WS_CHILD | LVS_REPORT /*| LVS_EDITLABELS*/ | LVS_SHOWSELALWAYS | LVS_AUTOARRANGE /*| LVS_OWNERDATA*/,
+	_hWnd = CreateWindow(WC_LISTVIEW, L"", WS_VISIBLE | WS_CHILD | LVS_REPORT /*| LVS_EDITLABELS*/ | LVS_SHOWSELALWAYS | LVS_AUTOARRANGE /*| LVS_OWNERDATA*/,
 		0, 0, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top,
 		_hWndParent, nullptr, hInstance, NULL);
 
@@ -63,13 +67,14 @@ bool MyListView::RegisterCreate(HINSTANCE hInstance, HWND hWnd)
 	{
 		return false;
 	}
-	SetWindowLongPtr(_hWnd, GWLP_USERDATA, (LONG_PTR)this);
-
-	InitColumns();
 
 	DWORD dwExStyle = ListView_GetExtendedListViewStyle(_hWnd);
 	dwExStyle = LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT;
 	ListView_SetExtendedListViewStyle(_hWnd, dwExStyle);
+
+	SetWindowLongPtr(_hWnd, GWLP_USERDATA, (LONG_PTR)this);
+
+	InitColumns();
 
 	if (!SetWindowSubclass(_hWnd, MyListView::StaticSubClass, 1, 0))
 	{
@@ -80,7 +85,6 @@ bool MyListView::RegisterCreate(HINSTANCE hInstance, HWND hWnd)
 	//COLORREF color = RGB(192, 192, 255);
 	//ListView_SetBkColor(_hWnd, color);
 
-	ShowWindow(_hWnd, SW_SHOW);
 	TRACE(L">> ListView create succeeded\r\n");
 	return true;
 }
@@ -96,27 +100,40 @@ LRESULT CALLBACK MyListView::StaticSubClass(HWND hWnd, UINT uMsg, WPARAM wParam,
 
 	switch (uMsg)
 	{
-		case WM_NOTIFY:
-		{
-			switch (((LPNMHDR)lParam)->code)
-			{
-				case LVN_GETDISPINFO:
-				{
-					NMLVDISPINFO* plvdi = (NMLVDISPINFO*)lParam;
-					pThis->OnGetDispInfo(plvdi);
-					return TRUE;
-				}
-			}
-		}
+	case WM_NCDESTROY:
+		TRACE(L">> Destroying ListView\r\n");
+		RemoveWindowSubclass(hWnd, MyListView::StaticSubClass, uIdSubclass);
+		return TRUE;
 
-		case WM_NCDESTROY:
+	case WM_NOTIFY:
+		switch (((LPNMHDR)lParam)->code)
 		{
-			TRACE(L">> Destroying ListView\r\n");
-			//RemoveWindowSubclass(hWnd, MyListView::StaticSubClass, uIdSubclass);
+		case LVN_GETDISPINFO:
+		{
+			TRACE(L">> ListView LVN_GETDISPINFO\r\n");
+			NMLVDISPINFO *plvdi = reinterpret_cast<NMLVDISPINFO*>(lParam);
+			pThis->OnGetDispInfo(plvdi);
+			return TRUE;
 		}
+		case LVN_SETDISPINFO:
+			TRACE(L">> ListView LVN_SETDISPINFO\r\n");
+			return DefSubclassProc(hWnd, uMsg, wParam, lParam);
+
+		case LVN_GETINFOTIP:
+			TRACE(L">> ListView LVN_GETINFOTIP\r\n");
+			return DefSubclassProc(hWnd, uMsg, wParam, lParam);
+
+		case LVN_ITEMCHANGED:
+			TRACE(L">> ListView LVN_ITEMCHANGED\r\n");
+			return DefSubclassProc(hWnd, uMsg, wParam, lParam);
+
+		case LVN_INSERTITEM:
+			TRACE(L">> ListView LVN_ITEMCHANGED\r\n");
+			return DefSubclassProc(hWnd, uMsg, wParam, lParam);
+		}
+	default:
+		return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 	}
-
-	return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 }
 
 bool MyListView::InitColumns()
@@ -144,21 +161,13 @@ bool MyListView::InitColumns()
 
 bool MyListView::OnGetDispInfo(NMLVDISPINFO* plvdi)
 {
-	CWiseFile* pFile = (CWiseFile*)plvdi->item.lParam;
-
-	std::wstring tmp = pFile->GetName();
-	LPWSTR ptmp = &tmp[0];
-
+	if (plvdi->item.mask & LVIF_TEXT)
+	{
+		CWiseFile* pFile = (CWiseFile*)(plvdi->item.lParam);
+		plvdi->item.pszText = pFile->GetFieldString(plvdi->item.iSubItem, false);
+	}
 	return true;
 }
-
-//void MyListView::OnPaint()
-//{
-//	PAINTSTRUCT ps;
-//	HDC hdc = BeginPaint(_hWnd, &ps);
-//	// TODO: Add any drawing code that uses hdc here...
-//	EndPaint(_hWnd, &ps);
-//}
 
 bool MyListView::Resize()
 {

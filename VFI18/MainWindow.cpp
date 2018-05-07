@@ -45,7 +45,11 @@ LRESULT CALLBACK MainWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		case WM_NOTIFY:
 		{
 			TRACE(L">> MainWindow forward WM_NOTIFY\r\n");
-			FORWARD_WM_NOTIFY(_listview._hWnd, wParam, (NMHDR*)lParam, SendMessage);
+			LPNMHDR pHdr = (LPNMHDR)lParam;
+			if (pHdr->hwndFrom == _listview._hWnd)
+			{
+				FORWARD_WM_NOTIFY(_listview._hWnd, wParam, (NMHDR*)lParam, SendMessage);
+			}
 			break;
 		}
 

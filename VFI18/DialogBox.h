@@ -16,8 +16,5 @@ private:
 
 	// handlers
 	INT_PTR MyDialogBox::OnInitDialog(HWND hDlg);
-
-	// member variables
-	HWND _hWnd;
 };
 

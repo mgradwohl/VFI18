@@ -23,12 +23,6 @@
 
 #pragma once
 
-#ifdef _DEBUG
-	#ifdef DEBUG_NEW
-		#define new DEBUG_NEW
-	#endif
-#endif
-
 #include "trace.h"
 #include "tguid.h"
 

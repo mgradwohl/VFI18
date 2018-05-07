@@ -58,6 +58,7 @@ public:
 	bool GetShortPath(LPWSTR pszBuf, int cchBuf);
 	LPWSTR GetFieldString(int iField, bool fOptions);
 	bool GetFieldString(LPWSTR pszBuf, int iField, bool fOptions);
+
 	// construction, destruction
 	CWiseFile();
 	CWiseFile(const CWiseFile& rwf);

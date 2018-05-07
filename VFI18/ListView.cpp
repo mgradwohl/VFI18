@@ -2,8 +2,8 @@
 #include "ListView.h"
 #include "WiseFile.h"
 
-#define LIST_NUMCOLUMNS	5
-#define LIST_MAXHEADLENGTH 20
+const static size_t LIST_NUMCOLUMNS = STR_COLUMNLAST - STR_COLUMN0;
+const static size_t LIST_MAXHEADLENGTH = 20;
 
 bool MyListView::AddFile(std::wstring& strFile)
 {
@@ -15,8 +15,8 @@ bool MyListView::AddFile(std::wstring& strFile)
 	item.iItem = iItem;
 	item.iSubItem = 0;
 	item.mask = LVIF_TEXT | LVIF_IMAGE | LVIF_PARAM | LVIF_STATE;
-	item.state = 0;      //
-	item.stateMask = 0;  //
+	item.state = 0;
+	item.stateMask = 0;
 	item.lParam = (LPARAM) pFile;
 	item.pszText = LPSTR_TEXTCALLBACK;
 	item.cchTextMax = 1024;
@@ -31,10 +31,7 @@ bool MyListView::AddFile(std::wstring& strFile)
 
 	for (int iSubItem = 1; iSubItem < LIST_NUMCOLUMNS; iSubItem++)
 	{
-		ListView_SetItemText(_hWnd,
-			iItem,
-			iSubItem,
-			LPSTR_TEXTCALLBACK);
+		ListView_SetItemText(_hWnd, iItem, iSubItem, LPSTR_TEXTCALLBACK);
 	}
 
 	return true;
@@ -81,9 +78,6 @@ bool MyListView::RegisterCreate(HINSTANCE hInstance, HWND hWnd)
 		TRACE(L">> ListView subclass failed\r\n");
 		return false;
 	}
-
-	//COLORREF color = RGB(192, 192, 255);
-	//ListView_SetBkColor(_hWnd, color);
 
 	TRACE(L">> ListView create succeeded\r\n");
 	return true;
@@ -140,14 +134,15 @@ bool MyListView::InitColumns()
 {
 	LV_COLUMN lvc;
 	ZeroMemory(&lvc, sizeof(lvc));
-	WCHAR szText[LIST_MAXHEADLENGTH];
+	wchar_t szText[LIST_MAXHEADLENGTH];
 
+	lvc.pszText = szText;
 	lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
 
 	for (unsigned int iCol = 0; iCol < LIST_NUMCOLUMNS; iCol++)
 	{
-		lvc.pszText = szText;
-		wsprintf(szText, L"Column %u", iCol);
+		lvc.iSubItem = iCol;
+		LoadSZstring(szText, STR_COLUMN0 + iCol, LIST_MAXHEADLENGTH);
 		lvc.iSubItem = iCol;
 		lvc.cx = 100;
 		if (-1 == ListView_InsertColumn(_hWnd, iCol, &lvc))

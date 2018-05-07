@@ -33,8 +33,6 @@ LRESULT CALLBACK MainWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		case WM_PAINT:
 		{
 			return DefWindowProc(hWnd, msg, wParam, lParam);
-
-//			OnPaint();
 			break;
 		}
 		case WM_DESTROY:
@@ -45,10 +43,12 @@ LRESULT CALLBACK MainWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		case WM_NOTIFY:
 		{
 			TRACE(L">> MainWindow forward WM_NOTIFY\r\n");
+			//messages are sent to the parent, because Win32 assumes the parent will handle these
+			//I forward them to the window that needs them, because the code to handle these
+			//is in the same class that owns the _hWnd that sent the message
 			LPNMHDR pHdr = (LPNMHDR)lParam;
-			if (pHdr->hwndFrom == _listview._hWnd)
 			{
-				FORWARD_WM_NOTIFY(_listview._hWnd, wParam, (NMHDR*)lParam, SendMessage);
+				FORWARD_WM_NOTIFY(pHdr->hwndFrom, wParam, pHdr/*(NMHDR*)lParam*/, SendMessage);
 			}
 			break;
 		}

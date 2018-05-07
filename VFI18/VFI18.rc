@@ -168,6 +168,33 @@ BEGIN
     STR_CRC_WORKING         "Working"
 END
 
+STRINGTABLE
+BEGIN
+    STR_COLUMN0             "Path"
+    IDS_STRING3001          "Name"
+    IDS_STRING3002          "Ext"
+    IDS_STRING3003          "Size"
+    IDS_STRING3004          "Create Date"
+    IDS_STRING3005          "Create Time"
+    IDS_STRING3006          "Write Date"
+    IDS_STRING3007          "Write Time"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING3008          "Access Date"
+    IDS_STRING3009          "Access Time"
+    IDS_STRING3010          "Attributes"
+    IDS_STRING3011          "File Version"
+    IDS_STRING3012          "Product Version"
+    IDS_STRING3013          "Language"
+    IDS_STRING3014          "Code Page"
+    IDS_STRING3015          "OS"
+    IDS_STRING3016          "File Type"
+    IDS_STRING3017          "File Flags"
+    IDS_STRING3018          "CRC-32"
+END
+
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 

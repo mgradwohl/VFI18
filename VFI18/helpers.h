@@ -35,12 +35,11 @@ struct CLASSATTRIBS
 	WORD idTitle;
 };
 
-#define MAX_DRIVE	(_MAX_DRIVE)
-#define MAX_DIR	(_MAX_DIR)
-#define MAX_FNAME	(_MAX_FNAME)
-#define MAX_EXT	(_MAX_EXT)
-#define MAX_USERNAME ((UNLEN + 1))
-
+static const size_t MAX_DRIVE = _MAX_DRIVE;
+static const size_t MAX_DIR = _MAX_DIR;
+static const size_t MAX_FNAME = _MAX_FNAME;
+static const size_t MAX_EXT = _MAX_EXT;
+static const size_t MAX_USERNAME = UNLEN + 1;
 static const size_t maxExtendedPathLength = 0x7FFF - 24;
 
 // QWORD
@@ -58,7 +57,7 @@ static const size_t maxExtendedPathLength = 0x7FFF - 24;
 #define zero(x)			(::SecureZeroMemory((LPVOID)&x, sizeof(x)))
 
 bool LoadWstring(std::wstring& strDest, UINT id);
-bool LoadSZstring(LPWSTR szOut, UINT id);
+bool LoadSZstring(LPWSTR szOut, UINT id, int cchMax);
 
 // Get number as a string
 bool int2wstr(std::wstring& strDest, QWORD i);

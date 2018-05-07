@@ -265,21 +265,21 @@ int CWiseFile::GetCRC(LPWSTR pszText, bool bHex)
 
 	if (CheckState(FWFS_CRC_ERROR))
 	{
-		LoadSZstring(m_szCRC, STR_CRC_ERROR);
+		LoadSZstring(m_szCRC, STR_CRC_ERROR, _countof(m_szCRC));
 		pszText = m_szCRC;
 		return FWF_SUCCESS;
 	}
 
 	if (CheckState(FWFS_CRC_PENDING))
 	{
-		LoadSZstring(m_szCRC, STR_CRC_PENDING);
+		LoadSZstring(m_szCRC, STR_CRC_PENDING, _countof(m_szCRC));
 		pszText = m_szCRC;
 		return FWF_SUCCESS;
 	}
 
 	if (CheckState(FWFS_CRC_WORKING))
 	{
-		LoadSZstring(m_szCRC, STR_CRC_WORKING);
+		LoadSZstring(m_szCRC, STR_CRC_WORKING, _countof(m_szCRC));
 		pszText = m_szCRC;
 		return FWF_SUCCESS;
 	}
@@ -1076,42 +1076,42 @@ int CWiseFile::GetFlags(LPWSTR pszText)
 		if (m_fDebugStripped)
 		{
 
-			LoadSZstring(szStr, STR_FLAG_DEBUG_STRIPPED);
+			LoadSZstring(szStr, STR_FLAG_DEBUG_STRIPPED, _countof(szStr));
 		}
 		else
 		{
-			LoadSZstring(szStr, STR_FLAG_DEBUG);
+			LoadSZstring(szStr, STR_FLAG_DEBUG, _countof(szStr));
 		}
 		wcscat_s(m_szFlags, 256, szStr);
 		wcscat_s(m_szFlags, 256, szSep);
 	}
 	if (m_dwFlags & VS_FF_PRERELEASE)
 	{
-		LoadSZstring(szStr, STR_FLAG_PRERELEASE);
+		LoadSZstring(szStr, STR_FLAG_PRERELEASE, _countof(szStr));
 		wcscat_s(m_szFlags, 256, szStr);
 		wcscat_s(m_szFlags, 256, szSep);
 	}
 	if (m_dwFlags & VS_FF_PATCHED)
 	{
-		LoadSZstring(szStr, STR_FLAG_PATCHED);
+		LoadSZstring(szStr, STR_FLAG_PATCHED, _countof(szStr));
 		wcscat_s(m_szFlags, 256, szStr);
 		wcscat_s(m_szFlags, 256, szSep);
 	}
 	if (m_dwFlags & VS_FF_PRIVATEBUILD)
 	{
-		LoadSZstring(szStr, STR_FLAG_PRIVATEBUILD);
+		LoadSZstring(szStr, STR_FLAG_PRIVATEBUILD, _countof(szStr));
 		wcscat_s(m_szFlags, 256, szStr);
 		wcscat_s(m_szFlags, 256, szSep);
 	}
 	if (m_dwFlags & VS_FF_INFOINFERRED)
 	{
-		LoadSZstring(szStr, STR_FLAG_INFOINFERRED);
+		LoadSZstring(szStr, STR_FLAG_INFOINFERRED, _countof(szStr));
 		wcscat_s(m_szFlags, 256, szStr);
 		wcscat_s(m_szFlags, 256, szSep);
 	}
 	if (m_dwFlags & VS_FF_SPECIALBUILD)
 	{
-		LoadSZstring(szStr, STR_FLAG_SPECIALBUILD);
+		LoadSZstring(szStr, STR_FLAG_SPECIALBUILD, _countof(szStr));
 		wcscat_s(m_szFlags, 256, szStr);
 		wcscat_s(m_szFlags, 256, szSep);
 	}
@@ -1248,6 +1248,7 @@ LPWSTR CWiseFile::GetFieldString(int iField, bool fOptions)
 	case 17: return szGetFlags();//(pszBuf));
 	case 18: return szGetCRC();//(pszBuf));
 	}
+	return L"\0";
 }
 
 bool CWiseFile::GetShortPath(LPWSTR pszBuf, int cchBuf)

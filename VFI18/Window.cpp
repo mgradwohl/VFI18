@@ -4,6 +4,9 @@
 
 Window::Window()
 {
+	_hWnd = nullptr;
+	_hWndParent = nullptr;
+	_hInstance = nullptr;
 }
 
 

@@ -13,10 +13,10 @@ bool LoadWstring(std::wstring& strDest, UINT id)
 	return false;
 }
 
-bool LoadSZstring(LPWSTR szOut, UINT id)
+bool LoadSZstring(LPWSTR pszOut, UINT id, int cchMax)
 {
 	LPWSTR pszBuffer = nullptr;
-	if (size_t length = ::LoadString(GetModuleHandle(NULL), id, szOut, 0))
+	size_t length = ::LoadString(GetModuleHandle(NULL), id, pszOut, cchMax);
 	{
 		return true;
 	}
@@ -229,4 +229,3 @@ bool OpenBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, std::wstring&
 
 	return ret;
 }
-

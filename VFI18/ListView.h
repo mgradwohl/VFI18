@@ -15,11 +15,8 @@ public:
 private:
 	static LRESULT CALLBACK StaticSubClass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
 	bool InitColumns();
-	bool OnNotify(HWND hWnd, unsigned int Code);
 	bool OnGetDispInfo(NMLVDISPINFO* plvdi);
-	WNDPROC prevWndProc;
 
-	//void OnPaint();
 public:
 	bool Resize();
 };

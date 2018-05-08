@@ -10,7 +10,6 @@ public:
 	MainWindow(HINSTANCE hInstance);
 	~MainWindow();
 
-	// 
 	bool SetWindowClassAttributes(CLASSATTRIBS* classattribs);
 	virtual bool RegisterCreate(HINSTANCE hInstance, HWND hWnd);
 	virtual bool CreateChildren();
@@ -36,7 +35,7 @@ private:
 	//list of child windows
 	StatusBar _statusbar;
 	MyListView _listview;
-	MyList _list;
+	//MyList _list;
 
 	std::wstring _szTitle;
 	std::wstring _szWindowClass;

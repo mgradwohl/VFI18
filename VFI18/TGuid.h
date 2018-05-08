@@ -26,15 +26,6 @@
 #include <objbase.h>
 #include "trace.h"
 
-#ifdef _DEBUG
-	#ifdef DEBUG_NEW
-		#define new DEBUG_NEW
-		#ifndef THIS_FILE
-			static WCHAR THIS_FILE[] = __FILE__;
-		#endif
-	#endif
-#endif
-
 class TGuid  
 {
 public:
@@ -57,16 +48,6 @@ public:
 		return (S_OK == ::CoCreateGuid(&m_guid));
 	}
 
-	void GetString(LPWSTR pszGuid)
-	{
-		if (m_szGuid[0] == NULL)
-		{
-			SetString();
-		}
-
-		lstrcpy(pszGuid, m_szGuid);
-	}
-
 	LPCWSTR GetString()
 	{
 		if (m_szGuid[0] == NULL)
@@ -85,13 +66,12 @@ public:
 
 private:
 	GUID m_guid;
-	WCHAR m_szGuid[1024 * sizeof(WCHAR)];
+	wchar_t m_szGuid[1024];
 
 	void SetString()
 	{
-		WCHAR szFmt[104];
-		lstrcpy(szFmt, (LPCWSTR) L"{%08lX-%04X-%04x-%02X%02X-%02X%02X%02X%02X%02X%02X}");
-		wsprintf(m_szGuid, szFmt, 
+		const wchar_t* pszFmt = L"{%08lX-%04X-%04x-%02X%02X-%02X%02X%02X%02X%02X%02X}";
+		wsprintf(m_szGuid, pszFmt, 
 			m_guid.Data1, m_guid.Data2, m_guid.Data3, 
 			m_guid.Data4[0], m_guid.Data4[1], m_guid.Data4[2], m_guid.Data4[3],
 			m_guid.Data4[4], m_guid.Data4[5], m_guid.Data4[6], m_guid.Data4[7]);

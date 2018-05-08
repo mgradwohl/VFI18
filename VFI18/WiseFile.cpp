@@ -864,42 +864,42 @@ int CWiseFile::SetFlags()
 		if (m_fDebugStripped)
 		{
 
-			LoadSZstring(szStr, STR_FLAG_DEBUG_STRIPPED);
+			LoadSZstring(szStr, STR_FLAG_DEBUG_STRIPPED, _countof(szStr));
 		}
 		else
 		{
-			LoadSZstring(szStr, STR_FLAG_DEBUG);
+			LoadSZstring(szStr, STR_FLAG_DEBUG, _countof(szStr));
 		}
 		wcscat_s(m_szFlags, 256, szStr);
 		wcscat_s(m_szFlags, 256, szSep);
 	}
 	if (m_dwFlags & VS_FF_PRERELEASE)
 	{
-		LoadSZstring(szStr, STR_FLAG_PRERELEASE);
+		LoadSZstring(szStr, STR_FLAG_PRERELEASE, _countof(szStr));
 		wcscat_s(m_szFlags, 256, szStr);
 		wcscat_s(m_szFlags, 256, szSep);
 	}
 	if (m_dwFlags & VS_FF_PATCHED)
 	{
-		LoadSZstring(szStr, STR_FLAG_PATCHED);
+		LoadSZstring(szStr, STR_FLAG_PATCHED, _countof(szStr));
 		wcscat_s(m_szFlags, 256, szStr);
 		wcscat_s(m_szFlags, 256, szSep);
 	}
 	if (m_dwFlags & VS_FF_PRIVATEBUILD)
 	{
-		LoadSZstring(szStr, STR_FLAG_PRIVATEBUILD);
+		LoadSZstring(szStr, STR_FLAG_PRIVATEBUILD, _countof(szStr));
 		wcscat_s(m_szFlags, 256, szStr);
 		wcscat_s(m_szFlags, 256, szSep);
 	}
 	if (m_dwFlags & VS_FF_INFOINFERRED)
 	{
-		LoadSZstring(szStr, STR_FLAG_INFOINFERRED);
+		LoadSZstring(szStr, STR_FLAG_INFOINFERRED, _countof(szStr));
 		wcscat_s(m_szFlags, 256, szStr);
 		wcscat_s(m_szFlags, 256, szSep);
 	}
 	if (m_dwFlags & VS_FF_SPECIALBUILD)
 	{
-		LoadSZstring(szStr, STR_FLAG_SPECIALBUILD);
+		LoadSZstring(szStr, STR_FLAG_SPECIALBUILD, _countof(szStr));
 		wcscat_s(m_szFlags, 256, szStr);
 		wcscat_s(m_szFlags, 256, szSep);
 	}

@@ -1,5 +1,4 @@
 #pragma once
-//#include <windows.h>
 
 #ifdef _DEBUG
 	bool _trace(wchar_t *format, ...);

@@ -54,241 +54,255 @@ class CWiseFile
 {
 
 public:
-	int ReadVersionInfoEx();
-	bool GetShortPath(LPWSTR pszBuf, int cchBuf);
-	LPWSTR GetFieldString(int iField, bool fOptions);
-	bool GetFieldString(LPWSTR pszBuf, int iField, bool fOptions);
 	// construction, destruction
 	CWiseFile();
 	CWiseFile(const CWiseFile& rwf);
 	CWiseFile(LPCWSTR pszFileSpec);
 	~CWiseFile();
 
-	// initialization, release
-	int Attach(LPCWSTR pszFileName);
-	int Detach();
-
 	const CWiseFile& Copy(const CWiseFile& rwf);
 	const CWiseFile& operator=(const CWiseFile& rwf);
 	bool operator==(const CWiseFile& rwf);
 
-	// access members
-	int GetFullPath(LPWSTR pszText)
+	// initialization, release
+	int Attach(LPCWSTR pszFileName);
+	int Detach();
+
+	// handlers for listview
+	LPWSTR GetFieldString(int iField, bool fOptions);
+
+	int ReadVersionInfoEx();
+/*
+	if (CheckState(FWFS_CRC_COMPLETE))
 	{
-		wcscpy_s(pszText, MAX_PATH, m_szFullPath);
-		return FWF_SUCCESS;
+		return m_dwCRC == rwf.m_dwCRC;
 	}
 
-	LPWSTR szGetFullPath()
+	if (CheckState(FWFS_VERSION))
 	{
+		return ((0 == lstrcmpi(m_szFullPath, rwf.m_szFullPath))
+			&& (m_qwFileVersion == rwf.m_qwFileVersion));
+	}
+
+	if (CheckState(FWFS_ATTACHED))
+	{
+		return (0 == lstrcmpi(m_szFullPath, rwf.m_szFullPath));
+	}
+*/
+
+	LPWSTR GetFullPath()
+	{
+		if (!CheckState(FWFS_ATTACHED))
+		{
+			return L"\0";
+		}
 		return m_szFullPath;
 	}
 
-	int GetPath(LPWSTR pszText)
+	LPWSTR GetPath()
 	{
-		pszText = m_szPath;
-		return FWF_SUCCESS;
-	}
-
-	LPWSTR szGetPath()
-	{
+		if (!CheckState(FWFS_ATTACHED))
+		{
+			return L"\0";
+		}
 		return m_szPath;
 	}
 
-	LPWSTR szGetSize()
+	LPWSTR GetSize()
 	{
+		if (!CheckState(FWFS_ATTACHED))
+		{
+			return L"\0";
+		}
 		return m_szSize;
 	}
 
-	LPWSTR szGetCRC()
+	LPWSTR GetCRC()
 	{
+		if (CheckState(FWFS_CRC_COMPLETE))
+		{
+			SetCRC(true);
+		}
 		return m_szCRC;
 	}
 
-	LPWSTR szGetOS()
+	LPWSTR GetOS()
 	{
+		if (CheckState(FWFS_VERSION))
+		{
+			SetOS();
+		}
 		return m_szOS;
 	}
 
-	LPWSTR szGetType()
+	LPWSTR GetType()
 	{
+		if (CheckState(FWFS_VERSION))
+		{
+			SetType();
+		}
 		return m_szType;
 	}
 
-	LPWSTR szGetDateLastAccess()
+	LPWSTR GetDateLastAccess()
 	{
+		if (!CheckState(FWFS_ATTACHED))
+		{
+			return L"\0";
+		}
 		return m_szDateLastAccess;
 	}
-	LPWSTR szGetTimeLastAccess()
+	LPWSTR GetTimeLastAccess()
 	{
+		if (!CheckState(FWFS_ATTACHED))
+		{
+			return L"\0";
+		}
 		return m_szTimeLastAccess;
 	}
-	LPWSTR szGetDateCreated()
+	LPWSTR GetDateCreated()
 	{
+		if (!CheckState(FWFS_ATTACHED))
+		{
+			return L"\0";
+		}
 		return m_szDateCreated;
 	}
-	LPWSTR szGetTimeCreated()
+	LPWSTR GetTimeCreated()
 	{
+		if (!CheckState(FWFS_ATTACHED))
+		{
+			return L"\0";
+		}
 		return m_szTimeCreated;
 	}
-	LPWSTR szGetDateLastWrite()
+	LPWSTR GetDateLastWrite()
 	{
+		if (!CheckState(FWFS_ATTACHED))
+		{
+			return L"\0";
+		}
 		return m_szDateLastWrite;
 	}
-	LPWSTR szGetTimeLastWrite()
+	LPWSTR GetTimeLastWrite()
 	{
+		if (!CheckState(FWFS_ATTACHED))
+		{
+			return L"\0";
+		}
 		return m_szTimeLastWrite;
 	}
-	LPWSTR szGetSize64()
+	LPWSTR GetSize64()
 	{
+		if (!CheckState(FWFS_ATTACHED))
+		{
+			return L"\0";
+		}
 		return m_szSize;
 	}
-	LPWSTR szGetAttribs()
+	LPWSTR GetAttribs()
 	{
+		if (CheckState(FWFS_VERSION))
+		{
+			SetAttribs();
+		}
 		return m_szAttribs;
 	}
-	LPWSTR szGetFileVersion()
+	LPWSTR GetFileVersion()
 	{
+		if (CheckState(FWFS_VERSION))
+		{
+			SetFileVersion();
+		}
 		return m_szFileVersion;
 	}
-	LPWSTR szGetProductVersion()
+	LPWSTR GetProductVersion()
 	{
+		if (CheckState(FWFS_VERSION))
+		{
+			SetFileVersion();
+		}
 		return m_szProductVersion;
 	}
-	LPWSTR szGetLanguage()
+	LPWSTR GetLanguage()
 	{
+		if (CheckState(FWFS_VERSION))
+		{
+			SetLanguage(m_wLanguage);
+		}
 		return m_szLanguage;
 	}
-	LPWSTR szGetCodePage()
+	LPWSTR GetCodePage()
 	{
+		if (CheckState(FWFS_VERSION))
+		{
+			SetCodePage(m_CodePage);
+		}
 		return m_szCodePage;
 	}
-	LPWSTR szGetFlags()
+	LPWSTR GetFlags()
 	{
+		if (CheckState(FWFS_VERSION))
+		{
+			SetFlags();
+		}
 		return m_szFlags;
 	}
 
-	int GetName(LPWSTR pszText)
+	LPWSTR GetName()
 	{
-		wcscpy_s(pszText, MAX_PATH, m_szName);
-		return FWF_SUCCESS;
-	}
-
-	LPWSTR szGetName()
-	{
+		if (!CheckState(FWFS_ATTACHED))
+		{
+			return L"\0";
+		}
 		return m_szName;
 	}
 
-	int GetExt(LPWSTR pszText)
+	LPWSTR GetExt()
 	{
-		wcscpy_s(pszText, MAX_PATH, m_szExt);
-		return FWF_SUCCESS;
-	}
-
-	LPWSTR szGetExt()
-	{
+		if (!CheckState(FWFS_ATTACHED))
+		{
+			return L"\0";
+		}
 		return m_szExt;
 	}
 
-	int GetShortName(LPWSTR pszText)
+	LPWSTR GetShortName()
 	{
-		wcscpy_s(pszText, MAX_PATH, m_szShortName);
-		return FWF_SUCCESS;
-	}
-
-	LPWSTR szGetShortName()
-	{
+		if (!CheckState(FWFS_ATTACHED))
+		{
+			return L"\0";
+		}
 		return m_szShortName;
 	}
 
-	int GetSize(LPWSTR pszText, bool bHex = false);
-	DWORD GetSize()
-	{
-		return LODWORD(m_qwSize);
-	}
+	int SetSize(bool bHex = false);
+	int SetAttribs();
 
-	int GetSize64(LPWSTR pszText, bool bHex = false);
-	QWORD GetSize64()
-	{
-		return m_qwSize;
-	}
+	int SetDateCreation(bool fLocal = true);
+	int SetDateLastAccess(bool fLocal = true);
+	int SetDateLastWrite(bool fLocal = true);
 
-	int GetAttribs(LPWSTR pszText);
-	DWORD GetAttribs()
-	{
-		return m_dwAttribs;
-	}
+	int SetTimeCreation(bool fLocal = true);
+	int SetTimeLastAccess(bool fLocal = true);
+	int SetTimeLastWrite(bool fLocal = true);
 
-	int GetDateCreation(LPWSTR pszText, bool fLocal = true);
-	LPSYSTEMTIME GetDateCreation(bool fLocal = true);
-	int GetDateLastAccess(LPWSTR pszText, bool fLocal = true);
-	LPSYSTEMTIME GetDateLastAccess(bool fLocal = true);
-	int GetDateLastWrite(LPWSTR pszText, bool fLocal = true);
-	LPSYSTEMTIME GetDateLastWrite(bool fLocal = true);
-
-	int GetTimeCreation(LPWSTR pszText, bool fLocal = true);
-	LPSYSTEMTIME GetTimeCreation(bool fLocal = true);
-	int GetTimeLastAccess(LPWSTR pszText, bool fLocal = true);
-	LPSYSTEMTIME GetTimeLastAccess(bool fLocal = true);
-	int GetTimeLastWrite(LPWSTR pszText, bool fLocal = true);
-	LPSYSTEMTIME GetTimeLastWrite(bool fLocal = true);
-
-	int GetFileVersion(LPWSTR pszText);
-	QWORD GetFileVersion()
-	{
-		return m_qwFileVersion;
-	}
+	int SetFileVersion();
 	int GetFileVersion(LPDWORD pdwHigh, LPDWORD pdwLow);
 	int GetFileVersion(LPWORD pwHighMS, LPWORD pwLowMS, LPWORD pwHighLS, LPWORD pwLowLS);
 
-	int GetProductVersion(LPWSTR pszText);
-	QWORD GetProductVersion()
-	{
-		return m_qwProductVersion;
-	}
+	int SetProductVersion();
 	int GetProductVersion(LPDWORD pdwMS, LPDWORD pdwLS);
 	int GetProductVersion(LPWORD pwHighMS, LPWORD pwLowMS, LPWORD pwHighLS, LPWORD pwLowLS);
 
-	bool GetLanguageName(UINT Language, LPWSTR pszBuf);
-	int GetLanguage(LPWSTR pszText, bool bNumeric = false);
-	WORD GetLanguage()
-	{
-		return m_wLanguage;
-	}
+	bool SetLanguage(UINT Language);
+	int SetCodePage(bool bNumeric = false);
 
-	int GetCodePage(LPWSTR pszText, bool bNumeric = false);
-	const TCodePage& GetCodePage()
-	{
-		return m_CodePage;
-	}
+	void SetOS();
+	void SetType();
+	int SetFlags();
 
-	int GetFullLanguage(LPWSTR pszText, bool bNumeric = false);
-
-	int GetOSString(LPWSTR pszText);
-	void GetOSString();
-	DWORD GetOS()
-	{
-		return m_dwOS;
-	}
-
-	int GetTypeString(LPWSTR pszText);
-	void GetTypeString();
-	DWORD GetType()
-	{
-		return m_dwType;
-	}
-
-	int GetFlags(LPWSTR pszText);
-	DWORD GetFlags()
-	{
-		return m_dwFlags;
-	}
-
-	int GetCRC(LPWSTR pszText, bool bHex = true);
-	DWORD GetCRC()
-	{
-		return m_dwCRC;
-	}
+	int SetCRC(bool bHex = true);
 
 	void SetState(WORD wState)
 	{

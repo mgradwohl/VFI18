@@ -945,25 +945,25 @@ LPWSTR CWiseFile::GetFieldString(int iField, bool fOptions)
 	fOptions;
 	switch (iField)
 	{
-	case  0: return GetPath();// (pszBuf));
-	case  1: return GetName();// (pszBuf));
-	case  2: return GetExt();// (pszBuf));
-	case  3: return GetSize64();// (pszBuf));
-	case  4: return GetDateCreated();// (pszBuf));
-	case  5: return GetTimeCreated();// (pszBuf));
-	case  6: return GetDateLastWrite();// (pszBuf));
-	case  7: return GetTimeLastWrite();// (pszBuf));
-	case  8: return GetDateLastAccess();// (pszBuf));
-	case  9: return GetTimeLastAccess();// (pszBuf));
-	case 10: return GetAttribs();// (pszBuf));
-	case 11: return GetFileVersion();// (pszBuf));
-	case 12: return GetProductVersion();//(pszBuf));
-	case 13: return GetLanguage();//(pszBuf));
-	case 14: return GetCodePage();//(pszBuf));
-	case 15: return GetOS();//(pszBuf));
-	case 16: return GetType();//(pszBuf));
-	case 17: return GetFlags();//(pszBuf));
-	case 18: return GetCRC();//(pszBuf));
+	case  0: return GetPath();
+	case  1: return GetName();
+	case  2: return GetExt();
+	case  3: return GetSize64();
+	case  4: return GetDateCreated();
+	case  5: return GetTimeCreated();
+	case  6: return GetDateLastWrite();
+	case  7: return GetTimeLastWrite();
+	case  8: return GetDateLastAccess();
+	case  9: return GetTimeLastAccess();
+	case 10: return GetAttribs();
+	case 11: return GetFileVersion();
+	case 12: return GetProductVersion();
+	case 13: return GetLanguage();
+	case 14: return GetCodePage();
+	case 15: return GetOS();
+	case 16: return GetType();
+	case 17: return GetFlags();
+	case 18: return GetCRC();
 	}
 	return L"Unknown";
 }

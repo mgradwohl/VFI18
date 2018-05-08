@@ -72,49 +72,32 @@ public:
 	LPWSTR GetFieldString(int iField, bool fOptions);
 
 	int ReadVersionInfoEx();
-/*
-	if (CheckState(FWFS_CRC_COMPLETE))
-	{
-		return m_dwCRC == rwf.m_dwCRC;
-	}
-
-	if (CheckState(FWFS_VERSION))
-	{
-		return ((0 == lstrcmpi(m_szFullPath, rwf.m_szFullPath))
-			&& (m_qwFileVersion == rwf.m_qwFileVersion));
-	}
-
-	if (CheckState(FWFS_ATTACHED))
-	{
-		return (0 == lstrcmpi(m_szFullPath, rwf.m_szFullPath));
-	}
-*/
 
 	LPWSTR GetFullPath()
 	{
-		if (!CheckState(FWFS_ATTACHED))
+		if (CheckState(FWFS_ATTACHED))
 		{
-			return L"\0";
+			return m_szFullPath;
 		}
-		return m_szFullPath;
+		return L"\0";
 	}
 
 	LPWSTR GetPath()
 	{
 		if (!CheckState(FWFS_ATTACHED))
 		{
-			return L"\0";
+			return m_szPath;
 		}
-		return m_szPath;
+		return L"\0";
 	}
 
 	LPWSTR GetSize()
 	{
 		if (!CheckState(FWFS_ATTACHED))
 		{
-			return L"\0";
+			return m_szSize;
 		}
-		return m_szSize;
+		return L"\0";
 	}
 
 	LPWSTR GetCRC()

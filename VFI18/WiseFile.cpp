@@ -228,19 +228,19 @@ int CWiseFile::SetCRC(bool bHex)
 
 	if (CheckState(FWFS_CRC_ERROR))
 	{
-		LoadSZstring(m_szCRC, STR_CRC_ERROR);
+		LoadSZstring(m_szCRC, _countof(m_szCRC), STR_CRC_ERROR);
 		return FWF_SUCCESS;
 	}
 
 	if (CheckState(FWFS_CRC_PENDING))
 	{
-		LoadSZstring(m_szCRC, STR_CRC_PENDING);
+		LoadSZstring(m_szCRC, _countof(m_szCRC), STR_CRC_PENDING);
 		return FWF_SUCCESS;
 	}
 
 	if (CheckState(FWFS_CRC_WORKING))
 	{
-		LoadSZstring(m_szCRC, STR_CRC_WORKING);
+		LoadSZstring(m_szCRC, _countof(m_szCRC), STR_CRC_WORKING);
 		return FWF_SUCCESS;
 	}
 

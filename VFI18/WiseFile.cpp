@@ -44,7 +44,7 @@ CWiseFile::CWiseFile(LPCWSTR pszFileSpec)
 		Init();
 	}
 
-	SetState(FWFS_VALID);
+	OrState(FWFS_CRC_PENDING);
 }
 
 // CWiseFile::~CWiseFile
@@ -110,14 +110,31 @@ int CWiseFile::Attach(LPCWSTR pszFileSpec)
 	lstrcat(m_szPath, szDir);
 	lstrcpy(m_szShortName, fd.cAlternateFileName);
 
+	SetState(FWFS_ATTACHED);
+
+	SetDateCreation();
+	SetTimeCreation();
+	SetDateLastWrite();
+	SetTimeLastWrite();
+	SetDateLastAccess();
+	SetTimeLastAccess();
+
 	if (0 != FindNextFile(hff, &fd))
 	{
 		FindClose(hff);
 		return FWF_ERR_WILDCARD;
 	}
-
 	FindClose(hff);
+
 	SetState(FWFS_ATTACHED);
+
+	SetDateCreation();
+	SetTimeCreation();
+	SetDateLastWrite();
+	SetTimeLastWrite();
+	SetDateLastAccess();
+	SetTimeLastAccess();
+
 	return FWF_SUCCESS;
 }
 
@@ -197,6 +214,7 @@ int CWiseFile::SetSize(bool bHex)
 		// Not using StrFormatByteSize because it wordifies everything
 		if (int2str(m_szSize, m_qwSize))
 		{
+			OrState(FWFS_SIZE);
 			return FWF_SUCCESS;
 		}
 		else
@@ -270,6 +288,7 @@ int CWiseFile::SetFileVersion()
 		(int)HIWORD(LODWORD(m_qwFileVersion)),
 		szDec,
 		(int)LOWORD(LODWORD(m_qwFileVersion)));
+
 	return FWF_SUCCESS;
 }
 
@@ -928,6 +947,7 @@ bool CWiseFile::SetLanguage(UINT Language)
 	{
 		VerLanguageName(Language, szTemp, 255);
 		wsprintf(m_szLanguage, L"%lu %s", Language, szTemp);
+		OrState(FWFS_LANGUAGE);
 		return true;
 	}
 
@@ -935,8 +955,8 @@ bool CWiseFile::SetLanguage(UINT Language)
 	{
 		VerLanguageName(Language, szTemp, 255);
 	}
-
 	wsprintf(m_szLanguage, L"%lu %s", Language, szTemp);
+	OrState(FWFS_LANGUAGE);
 	return true;
 }
 
@@ -948,7 +968,7 @@ LPWSTR CWiseFile::GetFieldString(int iField, bool fOptions)
 	case  0: return GetPath();
 	case  1: return GetName();
 	case  2: return GetExt();
-	case  3: return GetSize64();
+	case  3: return GetSize();
 	case  4: return GetDateCreated();
 	case  5: return GetTimeCreated();
 	case  6: return GetDateLastWrite();

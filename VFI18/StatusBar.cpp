@@ -21,7 +21,7 @@ bool StatusBar::UpdateFileCount(unsigned int i)
 	return true;
 }
 
-unsigned int StatusBar::GetHeight()
+size_t StatusBar::GetHeight()
 {
 	RECT rectStatusBar;
 	GetWindowRect(_hWnd, &rectStatusBar);

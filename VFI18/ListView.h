@@ -18,6 +18,6 @@ private:
 	bool OnGetDispInfo(NMLVDISPINFO* plvdi);
 
 public:
-	bool Resize(int sbHeight);
+	bool Resize(size_t sbHeight);
 };
 

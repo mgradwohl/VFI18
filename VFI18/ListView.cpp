@@ -164,10 +164,10 @@ bool MyListView::OnGetDispInfo(NMLVDISPINFO* plvdi)
 	return true;
 }
 
-bool MyListView::Resize()
+bool MyListView::Resize(int sbHeight)
 {
 	RECT rect;
 	GetClientRect(_hWndParent, &rect);
-	SetWindowPos(_hWnd, 0, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, SWP_NOZORDER);
+	SetWindowPos(_hWnd, 0, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top - sbHeight, SWP_NOZORDER);
 	return true;
 }

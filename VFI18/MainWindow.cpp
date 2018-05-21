@@ -74,7 +74,8 @@ void MainWindow::OnSize()
 {
 	// resize all children
 	_statusbar.Resize();
-	_listview.Resize();
+
+	_listview.Resize(_statusbar.GetHeight());
 }
 
 void MainWindow::OnFileAdd()
@@ -188,11 +189,6 @@ bool MainWindow::RegisterCreate(HINSTANCE hInstance, HWND hWnd)
 
 bool MainWindow::CreateChildren()
 {
-	if (!_listview.RegisterCreate(_hInstance, _hWnd))
-	{
-		return false;
-	}
-
 	// Setup the status bar with 3 panes, 1: 50%, 2: 25%, 3: 25%
 	std::vector<float> panes({ 0.50, 0.25, 0.25 });
 	
@@ -202,6 +198,11 @@ bool MainWindow::CreateChildren()
 	}
 
 	if (!_statusbar.Create())
+	{
+		return false;
+	}
+
+	if (!_listview.RegisterCreate(_hInstance, _hWnd))
 	{
 		return false;
 	}

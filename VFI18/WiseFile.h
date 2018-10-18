@@ -28,15 +28,17 @@
 // file states
 enum FileStates
 {
-	FWFS_VALID = 0x0000,	// constructed only
-	FWFS_ATTACHED = 0x0001,	// attached to a file
-	FWFS_VERSION = 0x0002,	// version information
-	FWFS_CRC_PENDING = 0x0004,	// unused
-	FWFS_CRC_WORKING = 0x0008,	// working on CRC
+	FWFS_VALID =		0x0000,	// constructed only
+	FWFS_ATTACHED =		0x0001,	// attached to a file
+	FWFS_VERSION =		0x0002,	// version information
+	FWFS_CRC_PENDING =	0x0004,	// unused
+	FWFS_CRC_WORKING =	0x0008,	// working on CRC
 	FWFS_CRC_COMPLETE = 0x0010,	// CRC complete
-	FWFS_CRC_ERROR = 0x0020,	// error generating CRC
-	FWFS_DELETE = 0x0040,	// pending deletion
-	FWFS_INVALID = 0x0080		// invalid state
+	FWFS_CRC_ERROR =	0x0020,	// error generating CRC
+	FWFS_SIZE =			0x0040,
+	FWFS_DELETE =		0x0080,	// pending deletion
+	FWFS_LANGUAGE =		0x0100,
+	FWFS_INVALID =		0x1000		// invalid state
 };
 
 #define	FWF_SUCCESS				0
@@ -84,7 +86,7 @@ public:
 
 	LPWSTR GetPath()
 	{
-		if (!CheckState(FWFS_ATTACHED))
+		if (CheckState(FWFS_ATTACHED))
 		{
 			return m_szPath;
 		}
@@ -93,10 +95,11 @@ public:
 
 	LPWSTR GetSize()
 	{
-		if (!CheckState(FWFS_ATTACHED))
+		if (CheckState(FWFS_SIZE))
 		{
 			return m_szSize;
 		}
+		SetSize(false);
 		return L"\0";
 	}
 
@@ -129,134 +132,152 @@ public:
 
 	LPWSTR GetDateLastAccess()
 	{
-		if (!CheckState(FWFS_ATTACHED))
+		if (CheckState(FWFS_ATTACHED))
 		{
-			return L"\0";
+			return m_szDateLastAccess;
 		}
-		return m_szDateLastAccess;
+		return L"\0";
 	}
+
 	LPWSTR GetTimeLastAccess()
 	{
-		if (!CheckState(FWFS_ATTACHED))
+		if (CheckState(FWFS_ATTACHED))
 		{
-			return L"\0";
+			return m_szTimeLastAccess;
 		}
-		return m_szTimeLastAccess;
+		return L"\0";
 	}
+
 	LPWSTR GetDateCreated()
 	{
-		if (!CheckState(FWFS_ATTACHED))
+		if (CheckState(FWFS_ATTACHED))
 		{
-			return L"\0";
+			return m_szDateCreated;
 		}
-		return m_szDateCreated;
+		return L"\0";
 	}
+
 	LPWSTR GetTimeCreated()
 	{
-		if (!CheckState(FWFS_ATTACHED))
+		if (CheckState(FWFS_ATTACHED))
 		{
-			return L"\0";
+			return m_szTimeCreated;
 		}
-		return m_szTimeCreated;
+		return L"\0";
 	}
+
 	LPWSTR GetDateLastWrite()
 	{
-		if (!CheckState(FWFS_ATTACHED))
+		if (CheckState(FWFS_ATTACHED))
 		{
-			return L"\0";
+			return m_szDateLastWrite;
 		}
-		return m_szDateLastWrite;
+		return L"\0";
 	}
+
 	LPWSTR GetTimeLastWrite()
 	{
-		if (!CheckState(FWFS_ATTACHED))
+		if (CheckState(FWFS_ATTACHED))
 		{
-			return L"\0";
+			return m_szTimeLastWrite;
 		}
-		return m_szTimeLastWrite;
+		return L"\0";
 	}
-	LPWSTR GetSize64()
-	{
-		if (!CheckState(FWFS_ATTACHED))
-		{
-			return L"\0";
-		}
-		return m_szSize;
-	}
+
 	LPWSTR GetAttribs()
 	{
 		if (CheckState(FWFS_VERSION))
 		{
-			SetAttribs();
+			return m_szAttribs;
 		}
+		SetAttribs();
 		return m_szAttribs;
 	}
+
 	LPWSTR GetFileVersion()
 	{
 		if (CheckState(FWFS_VERSION))
 		{
-			SetFileVersion();
+			return m_szFileVersion;
+		}
+
+		if (FWF_SUCCESS == SetProductVersion() && FWF_SUCCESS == SetFileVersion())
+		{
+			OrState(FWFS_VERSION);
 		}
 		return m_szFileVersion;
 	}
+
 	LPWSTR GetProductVersion()
 	{
 		if (CheckState(FWFS_VERSION))
 		{
-			SetFileVersion();
+			return m_szProductVersion;
+		}
+
+		if (FWF_SUCCESS == SetProductVersion() && FWF_SUCCESS == SetFileVersion())
+		{
+			OrState(FWFS_VERSION);
 		}
 		return m_szProductVersion;
 	}
+
 	LPWSTR GetLanguage()
 	{
-		if (CheckState(FWFS_VERSION))
+		if (CheckState(FWFS_LANGUAGE))
 		{
-			SetLanguage(m_wLanguage);
+			return m_szLanguage;
 		}
+		SetLanguage(m_wLanguage);
 		return m_szLanguage;
 	}
+
 	LPWSTR GetCodePage()
 	{
 		if (CheckState(FWFS_VERSION))
 		{
-			SetCodePage(m_CodePage);
+			return m_szCodePage;
 		}
+		SetCodePage(m_CodePage);
 		return m_szCodePage;
 	}
+
 	LPWSTR GetFlags()
 	{
 		if (CheckState(FWFS_VERSION))
 		{
+			return m_szFlags;
 			SetFlags();
 		}
+		SetFlags();
 		return m_szFlags;
 	}
 
 	LPWSTR GetName()
 	{
-		if (!CheckState(FWFS_ATTACHED))
+		if (CheckState(FWFS_ATTACHED))
 		{
-			return L"\0";
+			return m_szName;
 		}
-		return m_szName;
+		return L"\0";
 	}
 
 	LPWSTR GetExt()
 	{
-		if (!CheckState(FWFS_ATTACHED))
+		if (CheckState(FWFS_ATTACHED))
 		{
-			return L"\0";
+			return m_szExt;
 		}
-		return m_szExt;
+		return L"\0";
 	}
 
 	LPWSTR GetShortName()
 	{
-		if (!CheckState(FWFS_ATTACHED))
+		if (CheckState(FWFS_ATTACHED))
 		{
-			return L"\0";
+			return m_szShortName;
 		}
-		return m_szShortName;
+		return L"\0";
 	}
 
 	int SetSize(bool bHex = false);

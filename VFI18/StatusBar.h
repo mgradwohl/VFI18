@@ -12,7 +12,7 @@ public:
 	bool Create();
 	void Resize();
 	bool UpdateFileCount(unsigned int i);
-	unsigned int GetHeight();
+	size_t GetHeight();
 
 
 private:

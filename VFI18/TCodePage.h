@@ -432,9 +432,6 @@ public:
 			break;
 		}
 
-		#ifdef DEBUG
-				lstrcat(pszBuf, __T(" Lookup"));
-		#endif//DEBUG
 		return true;
 	}
 

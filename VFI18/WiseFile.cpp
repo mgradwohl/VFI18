@@ -103,12 +103,12 @@ int CWiseFile::Attach(LPCWSTR pszFileSpec)
 	_wsplitpath_s(pszFileSpec, szDrive, _MAX_DRIVE, szDir, _MAX_DIR, m_szName, _MAX_PATH, m_szExt, _MAX_PATH);
 
 	pszDot = CharNext(m_szExt);
-	lstrcpy(m_szExt, pszDot);
+	wcscpy_s(m_szExt, pszDot);
 
-	lstrcpy(m_szFullPath, pszFileSpec);
-	lstrcpy(m_szPath, szDrive);
-	lstrcat(m_szPath, szDir);
-	lstrcpy(m_szShortName, fd.cAlternateFileName);
+	wcscpy_s(m_szFullPath, pszFileSpec);
+	wcscpy_s(m_szPath, szDrive);
+	wcscat_s(m_szPath, szDir);
+	wcscpy_s(m_szShortName, fd.cAlternateFileName);
 
 	if (0 != FindNextFile(hff, &fd))
 	{
@@ -163,13 +163,13 @@ bool CWiseFile::operator==(const CWiseFile& rwf)
 
 	if (CheckState(FWFS_VERSION))
 	{
-		return ((0 == lstrcmpi(m_szFullPath, rwf.m_szFullPath))
+		return ((0 == _wcsicmp(m_szFullPath, rwf.m_szFullPath))
 			&& (m_qwFileVersion == rwf.m_qwFileVersion));
 	}
 
 	if (CheckState(FWFS_ATTACHED))
 	{
-		return (0 == lstrcmpi(m_szFullPath, rwf.m_szFullPath));
+		return (0 == _wcsicmp(m_szFullPath, rwf.m_szFullPath));
 	}
 
 	return false;
@@ -435,7 +435,7 @@ void CWiseFile::SetOS()
 			break;
 		case VOS_DOS_WINDOWS32: wcscpy_s(m_szOS, 64, L"VOS_DOS_WINDOWS32");
 			break;
-		case VOS_NT_WINDOWS32: lstrcpy(m_szOS, L"VOS_NT_WINDOWS32");
+		case VOS_NT_WINDOWS32: wcscpy_s(m_szOS, L"VOS_NT_WINDOWS32");
 			break;
 		default:		wsprintf(m_szOS, L"Reserved: 0x%08x", m_dwOS);
 	}
@@ -856,7 +856,7 @@ int CWiseFile::SetFlags()
 	// list seperator
 	WCHAR szSep[3];
 	GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SLIST, szSep, 2);
-	lstrcat(szSep, L" ");
+	wcscat_s(szSep, L" ");
 
 	wchar_t szStr[256];
 	if (m_dwFlags & VS_FF_DEBUG)
@@ -870,38 +870,38 @@ int CWiseFile::SetFlags()
 		{
 			LoadSZstring(szStr, STR_FLAG_DEBUG, _countof(szStr));
 		}
-		wcscat_s(m_szFlags, 256, szStr);
-		wcscat_s(m_szFlags, 256, szSep);
+		wcscat_s(m_szFlags, szStr);
+		wcscat_s(m_szFlags, szSep);
 	}
 	if (m_dwFlags & VS_FF_PRERELEASE)
 	{
 		LoadSZstring(szStr, STR_FLAG_PRERELEASE, _countof(szStr));
-		wcscat_s(m_szFlags, 256, szStr);
-		wcscat_s(m_szFlags, 256, szSep);
+		wcscat_s(m_szFlags, szStr);
+		wcscat_s(m_szFlags, szSep);
 	}
 	if (m_dwFlags & VS_FF_PATCHED)
 	{
 		LoadSZstring(szStr, STR_FLAG_PATCHED, _countof(szStr));
-		wcscat_s(m_szFlags, 256, szStr);
-		wcscat_s(m_szFlags, 256, szSep);
+		wcscat_s(m_szFlags, szStr);
+		wcscat_s(m_szFlags, szSep);
 	}
 	if (m_dwFlags & VS_FF_PRIVATEBUILD)
 	{
 		LoadSZstring(szStr, STR_FLAG_PRIVATEBUILD, _countof(szStr));
-		wcscat_s(m_szFlags, 256, szStr);
-		wcscat_s(m_szFlags, 256, szSep);
+		wcscat_s(m_szFlags, szStr);
+		wcscat_s(m_szFlags, szSep);
 	}
 	if (m_dwFlags & VS_FF_INFOINFERRED)
 	{
 		LoadSZstring(szStr, STR_FLAG_INFOINFERRED, _countof(szStr));
-		wcscat_s(m_szFlags, 256, szStr);
-		wcscat_s(m_szFlags, 256, szSep);
+		wcscat_s(m_szFlags, szStr);
+		wcscat_s(m_szFlags, szSep);
 	}
 	if (m_dwFlags & VS_FF_SPECIALBUILD)
 	{
 		LoadSZstring(szStr, STR_FLAG_SPECIALBUILD, _countof(szStr));
-		wcscat_s(m_szFlags, 256, szStr);
-		wcscat_s(m_szFlags, 256, szSep);
+		wcscat_s(m_szFlags, szStr);
+		wcscat_s(m_szFlags, szSep);
 	}
 
 	LPWSTR pEnd = wcsrchr(m_szFlags, szSep[0]);

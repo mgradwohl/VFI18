@@ -57,7 +57,7 @@ bool CFileVersion::Open(LPCWSTR pszFile)
 	{
 		// look in the Module Directory
 		GetModuleFolder(GetModuleHandle(NULL), szTemp);
-		lstrcat(szTemp, pszFile);
+		wcscat_s(szTemp, pszFile);
 		if (!DoesFileExist(szTemp))
 		{
 			// look in the Windows Directory

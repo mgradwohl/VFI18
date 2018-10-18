@@ -4,7 +4,7 @@
 bool LoadWstring(std::wstring& strDest, UINT id)
 {
 	LPWSTR pszBuffer = nullptr;
-	if (size_t length = ::LoadString(GetModuleHandle(NULL), id, (LPWSTR)&pszBuffer, 0))
+	if (size_t length = ::LoadString(GetModuleHandle(nullptr), id, (LPWSTR)&pszBuffer, 0))
 	{
 		strDest.assign(pszBuffer, length);
 		return true;
@@ -15,8 +15,7 @@ bool LoadWstring(std::wstring& strDest, UINT id)
 
 bool LoadSZstring(LPWSTR pszOut, UINT id, int cchMax)
 {
-	LPWSTR pszBuffer = nullptr;
-	size_t length = ::LoadString(GetModuleHandle(NULL), id, pszOut, cchMax);
+	const size_t length = ::LoadString(GetModuleHandle(nullptr), id, pszOut, cchMax);
 	{
 		return true;
 	}
@@ -35,10 +34,10 @@ bool int2wstr(std::wstring& strDest, QWORD i)
 	strBuffer.resize(68);
 	_ui64tow_s(i, &strBuffer[0], 67, 10);
 
-	if (0 == GetNumberFormat(LOCALE_USER_DEFAULT, 0, strBuffer.c_str(), NULL, &strDest[0], 65))
+	if (0 == GetNumberFormat(LOCALE_USER_DEFAULT, 0, strBuffer.c_str(), nullptr, &strDest[0], 65))
 		return false;
 
-	size_t decimal = strDest.find_last_of(strDec[0]);
+	const size_t decimal = strDest.find_last_of(strDec[0]);
 	strDest.resize(decimal);
 
 	return true;
@@ -63,7 +62,7 @@ bool int2str(LPWSTR pszDest, QWORD i)
 
 	LPWSTR pszDec = wcsrchr((LPWSTR)szOut, szDec[0]);
 	*pszDec = '\0';
-	return (NULL != lstrcpy(pszDest, (LPWSTR)szOut));
+	return (lstrcpy(pszDest, (LPWSTR)szOut) != nullptr);
 }
 
 bool pipe2null(std::wstring& strSource)

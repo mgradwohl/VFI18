@@ -552,6 +552,9 @@ int CWiseFile::ReadVersionInfo()
 	}
 
 	ZeroMemory(lpVerBuffer, dwVerSize);
+#pragma warning(suppress: 6388)
+// the warning is that dwVerHandle can not be zero. We never call this with dwVerHandle == 0
+// because of the dwVerSize < 1 check above, that returns an error if there is no version information
 	if (!::GetFileVersionInfo(m_szFullPath, dwVerHandle, dwVerSize, lpVerBuffer))
 	{
 		delete[] lpVerBuffer;

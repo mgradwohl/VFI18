@@ -31,7 +31,7 @@
 
 CFileVersion::CFileVersion()
 {
-	m_pszFile = NULL;
+	m_pszFile = nullptr;
 	m_fRead = false;
 	m_V1 = m_V2 = m_V3 = m_V4 = 0;
 }
@@ -41,22 +41,23 @@ CFileVersion::~CFileVersion()
 	m_V1 = m_V2 = m_V3 = m_V4 = 0;
 
 	delete [] m_pszFile;
-	m_pszFile = NULL;
+	m_pszFile = nullptr;
 	m_fRead = false;
 }
 
 bool CFileVersion::Open(LPCWSTR pszFile)
 {
-	if(NULL == pszFile)
+	if(pszFile == nullptr)
 	{
 		return false;
 	}
 
 	WCHAR szTemp[_MAX_PATH];
+	lstrinit(szTemp);
 	if (!DoesFileExist(pszFile))
 	{
 		// look in the Module Directory
-		GetModuleFolder(GetModuleHandle(NULL), szTemp);
+		GetModuleFolder(GetModuleHandle(nullptr), szTemp);
 		wcscat_s(szTemp, pszFile);
 		if (!DoesFileExist(szTemp))
 		{
@@ -83,14 +84,14 @@ bool CFileVersion::Open(LPCWSTR pszFile)
 		lstrcpy(szTemp, pszFile);
 	}
 
-	if (NULL != m_pszFile)
+	if (m_pszFile != nullptr)
 	{
 		delete [] m_pszFile;
-		m_pszFile = NULL;
+		m_pszFile = nullptr;
 	}
 
 	m_pszFile = new WCHAR[wcslen(szTemp) + 1];
-	if(NULL == m_pszFile)
+	if(m_pszFile == nullptr)
 	{
 		return false;
 	}
@@ -101,7 +102,7 @@ bool CFileVersion::Open(LPCWSTR pszFile)
 
 bool CFileVersion::GetVersion4(LPWSTR pszVersion)
 {
-	if ((NULL == pszVersion) || ('\0' == *pszVersion))
+	if ((pszVersion == nullptr) || ('\0' == *pszVersion))
 	{
 		return false;
 	}
@@ -123,7 +124,7 @@ bool CFileVersion::GetVersion4(LPWSTR pszVersion)
 
 bool CFileVersion::GetVersion3(LPWSTR pszVersion)
 {
-	if (NULL == pszVersion)
+	if (pszVersion == nullptr)
 	{
 		return false;
 	}
@@ -144,8 +145,8 @@ bool CFileVersion::GetVersion3(LPWSTR pszVersion)
 
 bool CFileVersion::ReadVersionInfo()
 {
-	LPVOID pVerInfoBlock = NULL;
-	VS_FIXEDFILEINFO* pVerInfo = NULL;
+	LPVOID pVerInfoBlock = nullptr;
+	VS_FIXEDFILEINFO* pVerInfo = nullptr;
 	UINT cbVerInfo = 0;
 	DWORD cbVerInfoBlock = 0;
 	DWORD dwUnused = 0;

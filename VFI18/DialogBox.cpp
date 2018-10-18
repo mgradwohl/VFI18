@@ -27,7 +27,7 @@ INT_PTR CALLBACK MyDialogBox::StaticAboutDialogProc(HWND hDlg, UINT message, WPA
 	}
 }
 
-void MyDialogBox::Create(HINSTANCE hInstance, HWND hParent )
+void  MyDialogBox::Create(HINSTANCE hInstance, HWND hParent)
 {
 	DialogBoxParamW(hInstance, MAKEINTRESOURCE(DIALOG_ABOUTBOX), hParent, &MyDialogBox::StaticAboutDialogProc, (LPARAM)this);
 }

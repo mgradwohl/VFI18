@@ -80,10 +80,27 @@ void MainWindow::OnSize()
 
 void MainWindow::OnFileAdd()
 {
-	std::wstring strFile;
-	OpenBox(_hWnd, L"Choose a file", L"*.*", strFile, NULL, OFN_FILEMUSTEXIST | OFN_FORCESHOWHIDDEN | OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY);
+	//std::wstring strFile;
+	// you can't use a std::wstring with the Windows File Open Dialog, because it uses \0 as separators and wstring will terminate
 
-	_listview.AddFile(strFile);
+	wchar_t* pszFile = new wchar_t[MAX_PATH * MAX_PATH];
+
+	OpenBox(_hWnd, L"Choose a file", L"*.*", pszFile, NULL, OFN_FILEMUSTEXIST | OFN_FORCESHOWHIDDEN | OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY);
+
+	std::wstring directory = pszFile;
+	pszFile += (directory.length() + 1);
+
+	while (*pszFile)
+	{
+		std::wstring filename = pszFile;
+
+		std::wstring filepath = directory + L"\\" + pszFile;
+		pszFile += filename.length() + 1;
+
+		// use the filename, e.g. add it to a vector
+		_listview.AddFile(filepath);
+	}
+
 	_statusbar.UpdateFileCount(_listview.GetItemCount());
 }
 

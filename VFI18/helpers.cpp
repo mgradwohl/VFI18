@@ -192,8 +192,9 @@ bool PathGetFileName(LPWSTR pszFileSpec)
 	return true;
 }
 
-bool OpenBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, std::wstring& strFile, LPWSTR pszFolder, const DWORD dwFlags)
+bool OpenBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, LPWSTR pszFile, LPWSTR pszFolder, const DWORD dwFlags)
 {
+	*pszFile = L'\0';
 	LPWSTR wszPath;
 	OPENFILENAME of;
 	::ZeroMemory(&of, sizeof(OPENFILENAME));
@@ -210,21 +211,20 @@ bool OpenBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, std::wstring&
 		of.lpstrInitialDir = pszFolder;
 	}
 
-	WCHAR szFile[_MAX_PATH];
-	*szFile = L'\0';
-
 	of.lStructSize = sizeof(OPENFILENAME);
 	of.hwndOwner = hWnd;
 	of.hInstance = GetModuleHandle(NULL);
 	of.lpstrFilter = pszFilter;
-	of.lpstrFile = szFile;
+	of.lpstrFile = pszFile;
 	of.nMaxFile = _MAX_PATH;
 	of.lpstrTitle = pszTitle;
 	of.Flags = dwFlags | OFN_DONTADDTORECENT | OFN_LONGNAMES | OFN_ENABLESIZING | OFN_EXPLORER | OFN_NONETWORKBUTTON;
 
-	bool ret = GetOpenFileNameW(&of);
+	if (!GetOpenFileNameW(&of))
+	{
+		DWORD dwError = CommDlgExtendedError();
+		return false;
+	}
 
-	strFile.assign(szFile);
-
-	return ret;
+	return true;
 }

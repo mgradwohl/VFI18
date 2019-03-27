@@ -29,7 +29,7 @@ bool MyListView::AddFile(std::wstring& strFile)
 		return false;
 	}
 
-	for (int iSubItem = 1; iSubItem < LIST_NUMCOLUMNS; iSubItem++)
+	for (int iSubItem = 0; iSubItem < LIST_NUMCOLUMNS; iSubItem++)
 	{
 		ListView_SetItemText(_hWnd, iItem, iSubItem, LPSTR_TEXTCALLBACK);
 	}

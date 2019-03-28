@@ -30,3 +30,5 @@
 #include "helpers.h"
 #include "mylist.h"
 #include "trace.h"
+
+const int MAXLONGPATH = 1024 * MAX_PATH;

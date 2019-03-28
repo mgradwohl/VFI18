@@ -83,9 +83,9 @@ void MainWindow::OnFileAdd()
 	//std::wstring strFile;
 	// you can't use a std::wstring with the Windows File Open Dialog, because it uses \0 as separators and wstring will terminate
 
-	wchar_t* pszFile = new wchar_t[MAX_PATH * MAX_PATH];
+	wchar_t* pszFile = new wchar_t[MAXLONGPATH];
 
-	OpenBox(_hWnd, L"Choose a file", L"*.*", pszFile, NULL, OFN_FILEMUSTEXIST | OFN_FORCESHOWHIDDEN | OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY);
+	OpenBox(_hWnd, L"Choose a file", L"*.*", pszFile, MAXLONGPATH, NULL, OFN_FILEMUSTEXIST | OFN_FORCESHOWHIDDEN | OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY);
 
 	std::wstring directory = pszFile;
 	pszFile += (directory.length() + 1);
@@ -102,6 +102,7 @@ void MainWindow::OnFileAdd()
 	}
 
 	_statusbar.UpdateFileCount(_listview.GetItemCount());
+	_statusbar.UpdateTotalSize(_listview.GetTotalSize());
 }
 
 LRESULT CALLBACK MainWindow::OnCommand(HWND hwndCtrl, int id, UINT codeNotify)

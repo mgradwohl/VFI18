@@ -192,13 +192,12 @@ bool PathGetFileName(LPWSTR pszFileSpec)
 	return true;
 }
 
-bool OpenBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, LPWSTR pszFile, LPWSTR pszFolder, const DWORD dwFlags)
+bool OpenBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, LPWSTR pszFile, int cchFile, LPWSTR pszFolder, const DWORD dwFlags)
 {
-	*pszFile = L'\0';
-	LPWSTR wszPath;
 	OPENFILENAME of;
 	::ZeroMemory(&of, sizeof(OPENFILENAME));
 
+	LPWSTR wszPath;
 	if (NULL == pszFolder)
 	{
 		SHGetKnownFolderPath(FOLDERID_Desktop, KF_FLAG_DEFAULT, NULL, &wszPath);
@@ -211,12 +210,13 @@ bool OpenBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, LPWSTR pszFil
 		of.lpstrInitialDir = pszFolder;
 	}
 
+	*pszFile = L'\0';
 	of.lStructSize = sizeof(OPENFILENAME);
 	of.hwndOwner = hWnd;
 	of.hInstance = GetModuleHandle(NULL);
 	of.lpstrFilter = pszFilter;
 	of.lpstrFile = pszFile;
-	of.nMaxFile = _MAX_PATH;
+	of.nMaxFile = cchFile;
 	of.lpstrTitle = pszTitle;
 	of.Flags = dwFlags | OFN_DONTADDTORECENT | OFN_LONGNAMES | OFN_ENABLESIZING | OFN_EXPLORER | OFN_NONETWORKBUTTON;
 

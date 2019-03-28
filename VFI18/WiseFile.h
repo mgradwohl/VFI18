@@ -103,6 +103,11 @@ public:
 		return L"\0";
 	}
 
+	unsigned int Size()
+	{
+		return m_qwSize;
+	}
+
 	LPWSTR GetCRC()
 	{
 		if (CheckState(FWFS_CRC_COMPLETE))

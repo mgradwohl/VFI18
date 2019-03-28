@@ -12,6 +12,7 @@ public:
 	bool Create();
 	void Resize();
 	bool UpdateFileCount(unsigned int i);
+	bool UpdateTotalSize(unsigned int i);
 	size_t GetHeight();
 
 

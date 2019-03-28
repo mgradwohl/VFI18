@@ -78,4 +78,4 @@ bool DoesFolderExist(LPCWSTR pszFolder);
 bool PathGetFolder(LPWSTR pszFileSpec);
 bool PathGetFileName(LPWSTR pszFileSpec);
 
-bool OpenBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, LPWSTR pszFile, LPWSTR pszFolder, const DWORD dwFlags);
+bool OpenBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, LPWSTR pszFile, int cchFile, LPWSTR pszFolder, const DWORD dwFlags);

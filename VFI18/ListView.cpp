@@ -5,9 +5,21 @@
 const static size_t LIST_NUMCOLUMNS = STR_COLUMNLAST - STR_COLUMN0;
 const static size_t LIST_MAXHEADLENGTH = 20;
 
+MyListView::MyListView()
+{
+	m_qwSize = 0;
+}
+
+MyListView::~MyListView()
+{
+	// get rid of everything
+}
+
 bool MyListView::AddFile(std::wstring& strFile)
 {
 	CWiseFile* pFile = new CWiseFile(strFile.c_str());
+
+	m_qwSize += pFile->Size();
 	LVITEM item;
 	ZeroMemory(&item, sizeof(LVITEM));
 
@@ -86,6 +98,11 @@ bool MyListView::RegisterCreate(HINSTANCE hInstance, HWND hWnd)
 unsigned int MyListView::GetItemCount()
 {
 	return ListView_GetItemCount(_hWnd);
+}
+
+unsigned int MyListView::GetTotalSize()
+{
+	return m_qwSize;
 }
 
 LRESULT CALLBACK MyListView::StaticSubClass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)

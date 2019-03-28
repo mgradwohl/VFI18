@@ -21,6 +21,18 @@ bool StatusBar::UpdateFileCount(unsigned int i)
 	return true;
 }
 
+bool StatusBar::UpdateTotalSize(unsigned int i)
+{
+	wchar_t szSize[100];
+	int2str(szSize, i);
+
+	wchar_t szStr[100];
+	wsprintf(szStr, L"%s bytes", szSize);
+
+	SendMessage(_hWnd, SB_SETTEXT, 1, (LPARAM)szStr);
+	return true;
+}
+
 size_t StatusBar::GetHeight()
 {
 	RECT rectStatusBar;

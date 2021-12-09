@@ -4,23 +4,37 @@
 bool LoadWstring(std::wstring& strDest, UINT id)
 {
 	LPWSTR pszBuffer = nullptr;
-	if (size_t length = ::LoadString(GetModuleHandle(nullptr), id, (LPWSTR)&pszBuffer, 0))
+	const size_t length = ::LoadString(GetModuleHandle(nullptr), id, (LPWSTR)&pszBuffer, 0);
+	if (length == 0)
 	{
-		strDest.assign(pszBuffer, length);
-		return true;
+		return false;
 	}
 
-	return false;
+	strDest.assign(pszBuffer, length);
+	return true;
 }
 
-bool LoadSZstring(LPWSTR pszOut, UINT id, int cchMax)
+bool LoadWstring(UINT id, LPWSTR pszDest, int cchMax)
 {
-	const size_t length = ::LoadString(GetModuleHandle(nullptr), id, pszOut, cchMax);
+	const size_t length = ::LoadString(GetModuleHandle(nullptr), id, pszDest, cchMax);
+	if (length == 0)
 	{
-		return true;
+		return false;
 	}
 
-	return false;
+	return true;
+}
+
+bool LoadWstring(LPWSTR pszDest, UINT id)
+{
+	LPWSTR pszBuffer = nullptr;
+	const size_t length = ::LoadString(GetModuleHandle(nullptr), id, pszDest, 0);
+	if (length == 0)
+	{
+		return false;
+	}
+
+	return true;
 }
 
 // Get number as a string

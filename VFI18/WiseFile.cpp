@@ -246,19 +246,19 @@ int CWiseFile::SetCRC(bool bHex)
 
 	if (CheckState(FWFS_CRC_ERROR))
 	{
-		LoadSZstring(m_szCRC, _countof(m_szCRC), STR_CRC_ERROR);
+		LoadWstring(STR_CRC_ERROR, m_szCRC, _countof(m_szCRC));
 		return FWF_SUCCESS;
 	}
 
 	if (CheckState(FWFS_CRC_PENDING))
 	{
-		LoadSZstring(m_szCRC, _countof(m_szCRC), STR_CRC_PENDING);
+		LoadWstring(STR_CRC_PENDING, m_szCRC, _countof(m_szCRC));
 		return FWF_SUCCESS;
 	}
 
 	if (CheckState(FWFS_CRC_WORKING))
 	{
-		LoadSZstring(m_szCRC, _countof(m_szCRC), STR_CRC_WORKING);
+		LoadWstring(STR_CRC_WORKING, m_szCRC, _countof(m_szCRC));
 		return FWF_SUCCESS;
 	}
 
@@ -886,42 +886,42 @@ int CWiseFile::SetFlags()
 		if (m_fDebugStripped)
 		{
 
-			LoadSZstring(szStr, STR_FLAG_DEBUG_STRIPPED, _countof(szStr));
+			LoadWstring(STR_FLAG_DEBUG_STRIPPED, szStr, _countof(szStr));
 		}
 		else
 		{
-			LoadSZstring(szStr, STR_FLAG_DEBUG, _countof(szStr));
+			LoadWstring(STR_FLAG_DEBUG, szStr, _countof(szStr));
 		}
 		wcscat_s(m_szFlags, szStr);
 		wcscat_s(m_szFlags, szSep);
 	}
 	if (m_dwFlags & VS_FF_PRERELEASE)
 	{
-		LoadSZstring(szStr, STR_FLAG_PRERELEASE, _countof(szStr));
+		LoadWstring(STR_FLAG_PRERELEASE, szStr, _countof(szStr));
 		wcscat_s(m_szFlags, szStr);
 		wcscat_s(m_szFlags, szSep);
 	}
 	if (m_dwFlags & VS_FF_PATCHED)
 	{
-		LoadSZstring(szStr, STR_FLAG_PATCHED, _countof(szStr));
+		LoadWstring(STR_FLAG_PATCHED, szStr, _countof(szStr));
 		wcscat_s(m_szFlags, szStr);
 		wcscat_s(m_szFlags, szSep);
 	}
 	if (m_dwFlags & VS_FF_PRIVATEBUILD)
 	{
-		LoadSZstring(szStr, STR_FLAG_PRIVATEBUILD, _countof(szStr));
+		LoadWstring(STR_FLAG_PRIVATEBUILD, szStr, _countof(szStr));
 		wcscat_s(m_szFlags, szStr);
 		wcscat_s(m_szFlags, szSep);
 	}
 	if (m_dwFlags & VS_FF_INFOINFERRED)
 	{
-		LoadSZstring(szStr, STR_FLAG_INFOINFERRED, _countof(szStr));
+		LoadWstring(STR_FLAG_INFOINFERRED, szStr, _countof(szStr));
 		wcscat_s(m_szFlags, szStr);
 		wcscat_s(m_szFlags, szSep);
 	}
 	if (m_dwFlags & VS_FF_SPECIALBUILD)
 	{
-		LoadSZstring(szStr, STR_FLAG_SPECIALBUILD, _countof(szStr));
+		LoadWstring(STR_FLAG_SPECIALBUILD, szStr, _countof(szStr));
 		wcscat_s(m_szFlags, szStr);
 		wcscat_s(m_szFlags, szSep);
 	}

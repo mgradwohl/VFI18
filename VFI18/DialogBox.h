@@ -5,7 +5,7 @@
 class MyDialogBox : public Window
 {
 public:
-	MyDialogBox();
+	MyDialogBox() noexcept;
 	~MyDialogBox();
 	void Create(HINSTANCE hInstance, HWND hParent);
 

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "DialogBox.h"
 
-MyDialogBox::MyDialogBox()
+MyDialogBox::MyDialogBox() noexcept
 {
 }
 
@@ -30,6 +30,7 @@ INT_PTR CALLBACK MyDialogBox::StaticAboutDialogProc(HWND hDlg, UINT message, WPA
 void  MyDialogBox::Create(HINSTANCE hInstance, HWND hParent)
 {
 	DialogBoxParamW(hInstance, MAKEINTRESOURCE(DIALOG_ABOUTBOX), hParent, &MyDialogBox::StaticAboutDialogProc, (LPARAM)this);
+	// if this returns a value < 1 it's a failure, but I'm not checking.
 }
 
 INT_PTR MyDialogBox::OnInitDialog(HWND hDlg)

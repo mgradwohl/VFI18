@@ -57,7 +57,10 @@ static const size_t maxExtendedPathLength = 0x7FFF - 24;
 #define zero(x)			(::SecureZeroMemory((LPVOID)&x, sizeof(x)))
 
 bool LoadWstring(std::wstring& strDest, UINT id);
-bool LoadSZstring(LPWSTR szOut, UINT id, int cchMax);
+bool LoadWstring(LPWSTR pszDest, UINT id);
+// use this one:
+bool LoadWstring(UINT id, LPWSTR pszDest, int cchMax);
+
 
 // Get number as a string
 bool int2wstr(std::wstring& strDest, QWORD i);

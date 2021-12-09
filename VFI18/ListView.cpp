@@ -2,7 +2,7 @@
 #include "ListView.h"
 #include "WiseFile.h"
 
-const static size_t LIST_NUMCOLUMNS = STR_COLUMNLAST - STR_COLUMN0;
+constexpr static size_t LIST_NUMCOLUMNS = STR_COLUMNLAST - STR_COLUMN0;
 const static size_t LIST_MAXHEADLENGTH = 20;
 
 MyListView::MyListView()
@@ -159,7 +159,7 @@ bool MyListView::InitColumns()
 	for (unsigned int iCol = 0; iCol < LIST_NUMCOLUMNS; iCol++)
 	{
 		lvc.iSubItem = iCol;
-		LoadSZstring(szText, STR_COLUMN0 + iCol, LIST_MAXHEADLENGTH);
+		LoadWstring(STR_COLUMN0 + iCol, szText, LIST_MAXHEADLENGTH);
 		lvc.iSubItem = iCol;
 		lvc.cx = 100;
 		if (-1 == ListView_InsertColumn(_hWnd, iCol, &lvc))

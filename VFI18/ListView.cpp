@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ListView.h"
 #include "WiseFile.h"
+#include "wil/resource.h"
 
 constexpr static size_t LIST_NUMCOLUMNS = STR_COLUMNLAST - STR_COLUMN0;
 const static size_t LIST_MAXHEADLENGTH = 20;
@@ -17,6 +18,9 @@ MyListView::~MyListView()
 
 bool MyListView::AddFile(std::wstring& strFile)
 {
+	//auto pThis = wil::make_unique_failfast<MyDialogBox>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+
+	//auto pFile = std::shared_ptr<CWiseFile>(strFile.c_str());
 	CWiseFile* pFile = new CWiseFile(strFile.c_str());
 
 	m_qwSize += pFile->Size();
@@ -29,7 +33,8 @@ bool MyListView::AddFile(std::wstring& strFile)
 	item.mask = LVIF_TEXT | LVIF_IMAGE | LVIF_PARAM | LVIF_STATE;
 	item.state = 0;
 	item.stateMask = 0;
-	item.lParam = (LPARAM) pFile;
+	//item.lParam = /*(LPARAM)*/ static_cast<LPARAM>(pFile.get());
+	item.lParam = (LPARAM)pFile;
 	item.pszText = LPSTR_TEXTCALLBACK;
 	item.cchTextMax = 1024;
 

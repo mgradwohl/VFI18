@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "DialogBox.h"
+#include "wil/resource.h"
 
 MyDialogBox::MyDialogBox() noexcept
 {
@@ -15,6 +16,7 @@ INT_PTR CALLBACK MyDialogBox::StaticAboutDialogProc(HWND hDlg, UINT message, WPA
 	{
 		SetWindowLongPtr(hDlg, GWLP_USERDATA, lParam);
 	}
+
 
 	MyDialogBox* pThis = (MyDialogBox*)GetWindowLongPtr(hDlg, GWLP_USERDATA);
 	if (pThis != NULL)

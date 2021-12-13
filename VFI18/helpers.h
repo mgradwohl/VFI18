@@ -35,15 +35,15 @@ struct CLASSATTRIBS
 	WORD idTitle;
 };
 
-static const size_t MAX_DRIVE = _MAX_DRIVE;
-static const size_t MAX_DIR = _MAX_DIR;
-static const size_t MAX_FNAME = _MAX_FNAME;
-static const size_t MAX_EXT = _MAX_EXT;
-static const size_t MAX_USERNAME = UNLEN + 1;
-static const size_t maxExtendedPathLength = 0x7FFF - 24;
+constexpr size_t MAX_DRIVE = _MAX_DRIVE;
+constexpr size_t MAX_DIR = _MAX_DIR;
+constexpr size_t MAX_FNAME = _MAX_FNAME;
+constexpr size_t MAX_EXT = _MAX_EXT;
+constexpr size_t MAX_USERNAME = UNLEN + 1;
+constexpr size_t maxExtendedPathLength = 0x7FFF - 24;
 
 // QWORD
-#define QWORD			DWORDLONG
+#define QWORD			uint64_t
 #define LPQWORD			QWORD*
 #define MAKEDWORD(a, b)	((DWORD)(((WORD)(a)) | ((DWORD)((WORD)(b))) << 16))
 #define MAKEQWORD(a, b)	((QWORD)(((DWORD)(a)) | ((QWORD)((DWORD)(b))) << 32))
@@ -56,8 +56,8 @@ static const size_t maxExtendedPathLength = 0x7FFF - 24;
 // pointer macros
 #define zero(x)			(::SecureZeroMemory((LPVOID)&x, sizeof(x)))
 
-bool LoadWstring(std::wstring& strDest, UINT id);
-bool LoadWstring(LPWSTR pszDest, UINT id);
+bool LoadWstring(UINT ID, std::wstring& strDest);
+//bool LoadWstring(LPWSTR pszDest, UINT id);
 // use this one:
 bool LoadWstring(UINT id, LPWSTR pszDest, int cchMax);
 
@@ -74,11 +74,11 @@ __forceinline void lstrinit(LPWSTR psz)
 	*psz = '\0';
 }
 
-__int64 GetFileSize64(LPCWSTR pszFileSpec);
+uint64_t GetFileSize64(LPCWSTR pszFileSpec);
 bool GetModuleFolder(HINSTANCE hInst, LPWSTR pszFolder);
 bool DoesFileExist(LPCWSTR pszFileName);
 bool DoesFolderExist(LPCWSTR pszFolder);
 bool PathGetFolder(LPWSTR pszFileSpec);
 bool PathGetFileName(LPWSTR pszFileSpec);
 
-bool OpenBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, LPWSTR pszFile, int cchFile, LPWSTR pszFolder, const DWORD dwFlags);
+bool OpenBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, std::wstring& strFile, int cchFile, LPCWSTR pszFolder, const DWORD dwFlags);

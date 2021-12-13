@@ -64,6 +64,6 @@ void MyList::AddHead(spWiseFile p)
 
 void MyList::Grow(size_t i)
 {
-	size_t c = list.size();
+	const size_t c = list.size();
 	list.resize(i + c);
 }

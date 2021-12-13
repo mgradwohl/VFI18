@@ -2,7 +2,7 @@
 #include "StatusBar.h"
 #include "resource.h"
 
-StatusBar::StatusBar()
+StatusBar::StatusBar() noexcept
 {
 	_hWnd = NULL;
 	_panes.clear();
@@ -21,7 +21,7 @@ bool StatusBar::UpdateFileCount(unsigned int i)
 	return true;
 }
 
-bool StatusBar::UpdateTotalSize(unsigned int i)
+bool StatusBar::UpdateTotalSize(uint64_t i)
 {
 	wchar_t szSize[100];
 	int2str(szSize, i);
@@ -83,17 +83,17 @@ void StatusBar::Resize()
 	RECT rectStatusBar;
 	GetWindowRect(_hWnd, &rectStatusBar);
 
-	int Width = rectParent.right - rectParent.left; 
+	const int Width = rectParent.right - rectParent.left; 
 
 	std::vector<int> panes;
 	int w = 0;
 	for (std::vector<float>::iterator it = _panes.begin(); it != _panes.end(); ++it)
 	{
-		w += *it * (int)Width;
+		w += (int) ceil( * it * (int)Width);
 		panes.push_back(w);
 	}
 
 	SendMessage(_hWnd, SB_SETPARTS, _panes.size(), (LPARAM)&panes[0]);
-	LPARAM lpsize = MAKELPARAM(Width, rectStatusBar.bottom - rectStatusBar.top);
+	const LPARAM lpsize = MAKELPARAM(Width, rectStatusBar.bottom - rectStatusBar.top);
 	SendMessage(_hWnd, WM_SIZE, 0, lpsize);
 }

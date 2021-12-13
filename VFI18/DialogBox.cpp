@@ -38,7 +38,7 @@ void  MyDialogBox::Create(HINSTANCE hInstance, HWND hParent)
 INT_PTR MyDialogBox::OnInitDialog(HWND hDlg)
 {
 	_hWnd = hDlg;
-	return (INT_PTR)TRUE;
+	return static_cast<INT_PTR>(TRUE);
 }
 
 INT_PTR CALLBACK MyDialogBox::AboutDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)

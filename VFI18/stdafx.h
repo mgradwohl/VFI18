@@ -18,12 +18,14 @@
 #include <commdlg.h>
 #include <shlwapi.h>
 #include <ShlObj.h>
+#include <stdint.h>
 
 // std header files
 #include <string>
 #include <memory>
 #include <vector>
 #include <algorithm>
+//#include <gsl/gsl_util>
 
 // project header files
 #include "resource.h"

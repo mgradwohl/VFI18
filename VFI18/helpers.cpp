@@ -1,9 +1,10 @@
 #include "stdafx.h"
 #include "helpers.h"
 
-bool LoadWstring(std::wstring& strDest, UINT id)
+bool LoadWstring(UINT id, std::wstring& strDest)
 {
 	LPWSTR pszBuffer = nullptr;
+	strDest.clear();
 	const size_t length = ::LoadString(GetModuleHandle(nullptr), id, (LPWSTR)&pszBuffer, 0);
 	if (length == 0)
 	{
@@ -25,18 +26,6 @@ bool LoadWstring(UINT id, LPWSTR pszDest, int cchMax)
 	return true;
 }
 
-bool LoadWstring(LPWSTR pszDest, UINT id)
-{
-	LPWSTR pszBuffer = nullptr;
-	const size_t length = ::LoadString(GetModuleHandle(nullptr), id, pszDest, 0);
-	if (length == 0)
-	{
-		return false;
-	}
-
-	return true;
-}
-
 // Get number as a string
 bool int2wstr(std::wstring& strDest, QWORD i)
 {
@@ -48,7 +37,7 @@ bool int2wstr(std::wstring& strDest, QWORD i)
 	strBuffer.resize(68);
 	_ui64tow_s(i, &strBuffer[0], 67, 10);
 
-	if (0 == GetNumberFormat(LOCALE_USER_DEFAULT, 0, strBuffer.c_str(), nullptr, &strDest[0], 65))
+	if (0 == GetNumberFormat(LOCALE_USER_DEFAULT, 0, strBuffer.c_str(), nullptr, /*gsl::at(strDest, 0)*/ &strDest[0], 65))
 		return false;
 
 	const size_t decimal = strDest.find_last_of(strDec[0]);
@@ -104,7 +93,8 @@ bool MyGetUserName(std::wstring& strUserName)
 	return true;
 }
 
-__int64 GetFileSize64(LPCWSTR pszFileSpec)
+//TODO all wstring
+uint64_t GetFileSize64(LPCWSTR pszFileSpec)
 {
 	if (pszFileSpec == nullptr)
 		return 0;
@@ -206,7 +196,8 @@ bool PathGetFileName(LPWSTR pszFileSpec)
 	return true;
 }
 
-bool OpenBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, LPWSTR pszFile, int cchFile, LPWSTR pszFolder, const DWORD dwFlags)
+// TODO all wstrings
+bool OpenBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, std::wstring& strFile, int cchFile, LPCWSTR pszFolder, const DWORD dwFlags)
 {
 	OPENFILENAME of;
 	::ZeroMemory(&of, sizeof(OPENFILENAME));
@@ -223,20 +214,20 @@ bool OpenBox(const HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszFilter, LPWSTR pszFil
 	{
 		of.lpstrInitialDir = pszFolder;
 	}
-
-	*pszFile = L'\0';
+	strFile.clear();
+	strFile.resize(maxExtendedPathLength);
 	of.lStructSize = sizeof(OPENFILENAME);
 	of.hwndOwner = hWnd;
 	of.hInstance = GetModuleHandle(NULL);
 	of.lpstrFilter = pszFilter;
-	of.lpstrFile = pszFile;
+	of.lpstrFile = strFile.data();
 	of.nMaxFile = cchFile;
 	of.lpstrTitle = pszTitle;
 	of.Flags = dwFlags | OFN_DONTADDTORECENT | OFN_LONGNAMES | OFN_ENABLESIZING | OFN_EXPLORER | OFN_NONETWORKBUTTON;
 
 	if (!GetOpenFileNameW(&of))
 	{
-		DWORD dwError = CommDlgExtendedError();
+		const DWORD dwError = CommDlgExtendedError();
 		return false;
 	}
 

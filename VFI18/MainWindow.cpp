@@ -42,7 +42,7 @@ LRESULT CALLBACK MainWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		}
 		case WM_NOTIFY:
 		{
-			TRACE(L">> MainWindow forward WM_NOTIFY\r\n");
+			//TRACE(L">> MainWindow forward WM_NOTIFY\r\n");
 			//messages are sent to the parent, because Win32 assumes the parent will handle these
 			//I forward them to the window that needs them, because the code to handle these
 			//is in the same class that owns the _hWnd that sent the message
@@ -83,23 +83,13 @@ void MainWindow::OnFileAdd()
 	//std::wstring strFile;
 	// you can't use a std::wstring with the Windows File Open Dialog, because it uses \0 as separators and wstring will terminate
 
-	wchar_t* pszFile = new wchar_t[MAXLONGPATH];
+	//wchar_t* pszFile = new wchar_t[MAXLONGPATH];
 
-	OpenBox(_hWnd, L"Choose a file", L"*.*", pszFile, MAXLONGPATH, NULL, OFN_FILEMUSTEXIST | OFN_FORCESHOWHIDDEN | OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY);
+	std::wstring file;
 
-	std::wstring directory = pszFile;
-	pszFile += (directory.length() + 1);
+	OpenBox(_hWnd, L"Choose a file", L"*.*", file, MAXLONGPATH, NULL, OFN_FILEMUSTEXIST | OFN_FORCESHOWHIDDEN | OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY);
 
-	while (*pszFile)
-	{
-		std::wstring filename = pszFile;
-
-		std::wstring filepath = directory + L"\\" + pszFile;
-		pszFile += filename.length() + 1;
-
-		// use the filename, e.g. add it to a vector
-		_listview.AddFile(filepath);
-	}
+	_listview.AddFile(file);
 
 	_statusbar.UpdateFileCount(_listview.GetItemCount());
 	_statusbar.UpdateTotalSize(_listview.GetTotalSize());
@@ -151,28 +141,17 @@ bool MainWindow::SetWindowClassAttributes(CLASSATTRIBS* classattribs)
 		return false;
 	}
 
-	LPWSTR pszBuffer = nullptr;
-	_szTitle.clear();
-	if (size_t length = ::LoadString(_hInstance, classattribs->idTitle, (LPWSTR)&pszBuffer, 0))
-	{
-		_szTitle.assign(pszBuffer, length);
-	}
-	else
+	if (!LoadWstring(classattribs->idTitle, _szTitle))
 	{
 		return false;
 	}
 
-	_szWindowClass.clear();
-	if (size_t length = ::LoadString(_hInstance, classattribs->idClass, (LPWSTR)&pszBuffer, 0))
-	{
-		_szWindowClass.assign(pszBuffer, length);
-	}
-	else
+	if (!LoadWstring(classattribs->idClass, _szWindowClass))
+	//if (size_t length = ::LoadString(_hInstance, classattribs->idClass, (LPWSTR)&pszBuffer, 0))
 	{
 		return false;
 	}
 
-	_szMenuName.clear();
 	if (classattribs->idMenu != 0)
 	{
 		_hMenu = ::LoadMenu(_hInstance, MAKEINTRESOURCE(classattribs->idMenu));

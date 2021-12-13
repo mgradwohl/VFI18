@@ -4,7 +4,7 @@
 #include "wil/resource.h"
 
 constexpr static size_t LIST_NUMCOLUMNS = STR_COLUMNLAST - STR_COLUMN0;
-const static size_t LIST_MAXHEADLENGTH = 20;
+constexpr static size_t LIST_MAXHEADLENGTH = 20;
 
 MyListView::MyListView()
 {
@@ -18,10 +18,12 @@ MyListView::~MyListView()
 
 bool MyListView::AddFile(std::wstring& strFile)
 {
-	//auto pThis = wil::make_unique_failfast<MyDialogBox>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
-
-	//auto pFile = std::shared_ptr<CWiseFile>(strFile.c_str());
-	CWiseFile* pFile = new CWiseFile(strFile.c_str());
+	// *** if I do *** I get an access violation
+	// *** because the shared_ptr gets cleaned up
+	// *** std::shared_ptr<CWiseFile> pFile(new CWiseFile(strFile));
+	// 
+	//CWiseFile* pFile = new CWiseFile(strFile);
+	auto pFile = new CWiseFile(strFile);
 
 	m_qwSize += pFile->Size();
 	LVITEM item;
@@ -33,7 +35,8 @@ bool MyListView::AddFile(std::wstring& strFile)
 	item.mask = LVIF_TEXT | LVIF_IMAGE | LVIF_PARAM | LVIF_STATE;
 	item.state = 0;
 	item.stateMask = 0;
-	//item.lParam = /*(LPARAM)*/ static_cast<LPARAM>(pFile.get());
+	// *** access violation part two
+	// item.lParam = (LPARAM)pFile.get();
 	item.lParam = (LPARAM)pFile;
 	item.pszText = LPSTR_TEXTCALLBACK;
 	item.cchTextMax = 1024;
@@ -105,14 +108,14 @@ unsigned int MyListView::GetItemCount()
 	return ListView_GetItemCount(_hWnd);
 }
 
-unsigned int MyListView::GetTotalSize()
+uint64_t MyListView::GetTotalSize()
 {
 	return m_qwSize;
 }
 
 LRESULT CALLBACK MyListView::StaticSubClass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
 {
-	MyListView *pThis = (MyListView*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+	MyListView* pThis = (MyListView*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 
 	switch (uMsg)
 	{
@@ -127,7 +130,7 @@ LRESULT CALLBACK MyListView::StaticSubClass(HWND hWnd, UINT uMsg, WPARAM wParam,
 		case LVN_GETDISPINFO:
 		{
 			TRACE(L">> ListView LVN_GETDISPINFO\r\n");
-			NMLVDISPINFO *plvdi = reinterpret_cast<NMLVDISPINFO*>(lParam);
+			NMLVDISPINFO* plvdi = reinterpret_cast<NMLVDISPINFO*>(lParam);
 			pThis->OnGetDispInfo(plvdi);
 			return TRUE;
 		}
@@ -146,9 +149,10 @@ LRESULT CALLBACK MyListView::StaticSubClass(HWND hWnd, UINT uMsg, WPARAM wParam,
 		case LVN_INSERTITEM:
 			TRACE(L">> ListView LVN_ITEMCHANGED\r\n");
 			return DefSubclassProc(hWnd, uMsg, wParam, lParam);
+		default:
+			return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 		}
-	default:
-		return DefSubclassProc(hWnd, uMsg, wParam, lParam);
+	default: return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 	}
 }
 
@@ -181,6 +185,8 @@ bool MyListView::OnGetDispInfo(NMLVDISPINFO* plvdi)
 	if (plvdi->item.mask & LVIF_TEXT)
 	{
 		CWiseFile* pFile = (CWiseFile*)(plvdi->item.lParam);
+		//auto pFile = dynamic_cast<CWiseFile*>((plvdi->item.lParam));
+
 		plvdi->item.pszText = pFile->GetFieldString(plvdi->item.iSubItem, false);
 	}
 	return true;

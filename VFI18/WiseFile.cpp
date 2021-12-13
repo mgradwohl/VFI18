@@ -32,14 +32,9 @@ CWiseFile::CWiseFile()
 	SetState(FWFS_VALID);
 }
 
-CWiseFile::CWiseFile(const CWiseFile& rwf)
+CWiseFile::CWiseFile(std::wstring strFileSpec)
 {
-	Copy(rwf);
-}
-
-CWiseFile::CWiseFile(LPCWSTR pszFileSpec)
-{
-	if (FWF_SUCCESS != Attach(pszFileSpec))
+	if (FWF_SUCCESS != Attach(strFileSpec))
 	{
 		Init();
 	}
@@ -47,28 +42,23 @@ CWiseFile::CWiseFile(LPCWSTR pszFileSpec)
 	OrState(FWFS_CRC_PENDING);
 }
 
-// CWiseFile::~CWiseFile
 CWiseFile::~CWiseFile()
 {
 	SetState(FWFS_INVALID);
 }
 
-int CWiseFile::Attach(LPCWSTR pszFileSpec)
+int CWiseFile::Attach(std::wstring strFileSpec)
 {
-	if (wcslen(pszFileSpec) < 1 || (wcslen(pszFileSpec) > _MAX_PATH))
-	{
-		return FWF_ERR_BADPARAM;
-	}
-
-	if (0 == StrCmpN(pszFileSpec, L"\\\\?\\", 4))
-	{
-		return FWF_ERR_SPECIALPATH;
-	}
+	// check to see if it's a weird path
+	//if (0 == StrCmpN(pszFileSpec, L"\\\\?\\", 4))
+	//{
+	//	return FWF_ERR_SPECIALPATH;
+	//}
 
 	WIN32_FIND_DATA fd;
 	zero(fd);
 
-	HANDLE hff = FindFirstFile(pszFileSpec, &fd);
+	HANDLE hff = FindFirstFile(strFileSpec.c_str(), &fd);
 	if (INVALID_HANDLE_VALUE == hff)
 	{
 		//FindClose(hff);
@@ -82,7 +72,7 @@ int CWiseFile::Attach(LPCWSTR pszFileSpec)
 		return FWF_ERR_FOLDER;
 	}
 
-	m_qwSize = GetFileSize64(pszFileSpec);
+	m_qwSize = GetFileSize64(strFileSpec.c_str());
 
 	FILETIME ft;
 	::FileTimeToSystemTime(&(fd.ftCreationTime), &m_stUTCCreation);
@@ -99,16 +89,25 @@ int CWiseFile::Attach(LPCWSTR pszFileSpec)
 
 	WCHAR szDrive[_MAX_DRIVE];
 	WCHAR szDir[_MAX_DIR];
+	WCHAR szName[_MAX_PATH];
+	WCHAR szExt[_MAX_PATH];
+
 	LPWSTR pszDot;
-	_wsplitpath_s(pszFileSpec, szDrive, _MAX_DRIVE, szDir, _MAX_DIR, m_szName, _MAX_PATH, m_szExt, _MAX_PATH);
+	_wsplitpath_s(strFileSpec.c_str(), szDrive, _MAX_DRIVE, szDir, _MAX_DIR, szName, _MAX_PATH, szExt, _MAX_PATH);
 
-	pszDot = CharNext(m_szExt);
-	wcscpy_s(m_szExt, pszDot);
+	//wcscpy_s(_strFullPath, pszFileSpec);
+	_strFullPath = strFileSpec;
 
-	wcscpy_s(m_szFullPath, pszFileSpec);
-	wcscpy_s(m_szPath, szDrive);
-	wcscat_s(m_szPath, szDir);
-	wcscpy_s(m_szShortName, fd.cAlternateFileName);
+	//wcscpy_s(_strszPath, szDrive);
+	_strPath.assign(szDrive);
+	//wcscat_s(_strszPath, szDir);
+	_strPath.append(szDir);
+
+	_strName.assign(szName);
+
+	pszDot = CharNext(szExt);
+	//wcscpy_s(_strExt, pszDot);
+	_strExt.assign(pszDot);
 
 	SetState(FWFS_ATTACHED);
 
@@ -136,60 +135,6 @@ int CWiseFile::Attach(LPCWSTR pszFileSpec)
 	SetTimeLastAccess();
 
 	return FWF_SUCCESS;
-}
-
-const CWiseFile& CWiseFile::Copy(const CWiseFile& rwf)
-{
-	m_dwAttribs = rwf.m_dwAttribs;
-	m_dwCRC = rwf.m_dwCRC;
-	m_dwFlags = rwf.m_dwFlags;
-	m_dwOS = rwf.m_dwOS;
-	m_dwType = rwf.m_dwType;
-	m_qwFileVersion = rwf.m_qwFileVersion;
-	m_qwProductVersion = rwf.m_qwProductVersion;
-	m_qwSize = rwf.m_qwSize;
-	m_stLocalCreation = rwf.m_stLocalCreation;
-	m_stLocalLastAccess = rwf.m_stLocalLastAccess;
-	m_stLocalLastWrite = rwf.m_stLocalLastWrite;
-	m_stUTCCreation = rwf.m_stUTCCreation;
-	m_stUTCLastAccess = rwf.m_stUTCLastAccess;
-	m_stUTCLastWrite = rwf.m_stUTCLastWrite;
-	wcscpy_s(m_szAttribs, rwf.m_szAttribs);
-	wcscpy_s(m_szExt, rwf.m_szExt);
-	wcscpy_s(m_szFlags, rwf.m_szFlags);
-	wcscpy_s(m_szFullPath, rwf.m_szFullPath);
-	wcscpy_s(m_szShortName, rwf.m_szShortName);
-	m_CodePage = rwf.m_CodePage;
-	m_wFileState = rwf.m_wFileState;
-	m_wLanguage = rwf.m_wLanguage;
-
-	return *this;
-}
-
-const CWiseFile& CWiseFile::operator=(const CWiseFile& rwf)
-{
-	return Copy(rwf);
-}
-
-bool CWiseFile::operator==(const CWiseFile& rwf)
-{
-	if (CheckState(FWFS_CRC_COMPLETE))
-	{
-		return m_dwCRC == rwf.m_dwCRC;
-	}
-
-	if (CheckState(FWFS_VERSION))
-	{
-		return ((0 == _wcsicmp(m_szFullPath, rwf.m_szFullPath))
-			&& (m_qwFileVersion == rwf.m_qwFileVersion));
-	}
-
-	if (CheckState(FWFS_ATTACHED))
-	{
-		return (0 == _wcsicmp(m_szFullPath, rwf.m_szFullPath));
-	}
-
-	return false;
 }
 
 int CWiseFile::Detach()
@@ -515,7 +460,7 @@ int CWiseFile::ReadVersionInfo()
 {
 
 	char szPath[_MAX_PATH];
-	WideCharToMultiByte(CP_ACP, WC_COMPOSITECHECK, m_szFullPath, _MAX_PATH, szPath, _MAX_PATH, nullptr, nullptr);
+	WideCharToMultiByte(CP_ACP, WC_COMPOSITECHECK, _strFullPath.c_str(), _MAX_PATH, szPath, _MAX_PATH, nullptr, nullptr);
 	PLOADED_IMAGE pli;
 	pli = ImageLoad(szPath, NULL);
 	if (NULL != pli)
@@ -538,7 +483,7 @@ int CWiseFile::ReadVersionInfo()
 
 	// this takes a long time to call, max size I've seen is 5476
 	DWORD	dwVerHandle = 0;
-	dwVerSize = ::GetFileVersionInfoSize(m_szFullPath, &dwVerHandle);
+	dwVerSize = ::GetFileVersionInfoSize(_strFullPath.c_str(), &dwVerHandle);
 
 	if (dwVerSize < 1)
 		return FWF_ERR_NOVERSION;
@@ -555,7 +500,7 @@ int CWiseFile::ReadVersionInfo()
 #pragma warning(suppress: 6388)
 // the warning is that dwVerHandle can not be zero. We never call this with dwVerHandle == 0
 // because of the dwVerSize < 1 check above, that returns an error if there is no version information
-	if (!::GetFileVersionInfo(m_szFullPath, dwVerHandle, dwVerSize, lpVerBuffer))
+	if (!::GetFileVersionInfo(_strFullPath.c_str(), dwVerHandle, dwVerSize, lpVerBuffer))
 	{
 		delete[] lpVerBuffer;
 		return FWF_ERR_NOVERSION;
@@ -768,20 +713,21 @@ int CWiseFile::SetTimeLastWrite(bool fLocal)
 
 int CWiseFile::TouchFileTime(FILETIME* lpTime)
 {
+	LPCWSTR pszPath = _strFullPath.c_str();
 	if (!CheckState(FWFS_ATTACHED))
 		return FWF_ERR_INVALID;
 
 	if (NULL == lpTime)
 		return FWF_ERR_BADPARAM;
 
-	DWORD dwOldAttribs = ::GetFileAttributes(m_szFullPath);
-	if (false == ::SetFileAttributes(m_szFullPath, FILE_ATTRIBUTE_NORMAL))
+	const DWORD dwOldAttribs = ::GetFileAttributes(pszPath);
+	if (false == ::SetFileAttributes(pszPath, FILE_ATTRIBUTE_NORMAL))
 	{
-		::SetFileAttributes(m_szFullPath, dwOldAttribs);
+		::SetFileAttributes(pszPath, dwOldAttribs);
 		return FWF_ERR_OTHER;
 	}
 
-	HANDLE hFile = ::CreateFile(m_szFullPath,
+	HANDLE hFile = ::CreateFile(pszPath,
 		GENERIC_WRITE,
 		FILE_SHARE_READ | FILE_SHARE_WRITE,
 		NULL,
@@ -791,19 +737,19 @@ int CWiseFile::TouchFileTime(FILETIME* lpTime)
 
 	if (INVALID_HANDLE_VALUE == hFile)
 	{
-		::SetFileAttributes(m_szFullPath, dwOldAttribs);
+		::SetFileAttributes(pszPath, dwOldAttribs);
 		::CloseHandle(hFile);
 		return FWF_ERR_OTHER;
 	}
 
 	if (false == ::SetFileTime(hFile, lpTime, lpTime, lpTime))
 	{
-		::SetFileAttributes(m_szFullPath, dwOldAttribs);
+		::SetFileAttributes(pszPath, dwOldAttribs);
 		::CloseHandle(hFile);
 		return FWF_ERR_OTHER;
 	}
 
-	::SetFileAttributes(m_szFullPath, dwOldAttribs);
+	::SetFileAttributes(pszPath, dwOldAttribs);
 	::CloseHandle(hFile);
 
 	FILETIME ft;
@@ -968,9 +914,9 @@ LPWSTR CWiseFile::GetFieldString(int iField, bool fOptions)
 	fOptions;
 	switch (iField)
 	{
-	case  0: return GetPath();
-	case  1: return GetName();
-	case  2: return GetExt();
+	case  0: return &_strFullPath[0];
+	case  1: return &_strName[0];
+	case  2: return &_strExt[0];
 	case  3: return GetSize();
 	case  4: return GetDateCreated();
 	case  5: return GetTimeCreated();
@@ -993,7 +939,7 @@ LPWSTR CWiseFile::GetFieldString(int iField, bool fOptions)
 
 int CWiseFile::ReadVersionInfoEx()
 {
-	HINSTANCE h = ::LoadLibraryEx(m_szFullPath, NULL, LOAD_LIBRARY_AS_DATAFILE);
+	HINSTANCE h = ::LoadLibraryEx(_strFullPath.c_str(), NULL, LOAD_LIBRARY_AS_DATAFILE);
 	if (NULL == h)
 	{
 		return FWF_ERR_NOVERSION;
@@ -1013,7 +959,7 @@ int CWiseFile::ReadVersionInfoEx()
 		return FWF_ERR_NOVERSION;
 	}
 
-	const UINT xcb = ::GetFileVersionInfoSize(m_szFullPath, 0);
+	const UINT xcb = ::GetFileVersionInfoSize(_strFullPath.c_str(), 0);
 
 	HGLOBAL hglobal = ::LoadResource(h, hrsrc);
 	if (hglobal == NULL)
@@ -1022,7 +968,7 @@ int CWiseFile::ReadVersionInfoEx()
 		return FWF_ERR_NOVERSION;
 	}
 
-	LPBYTE pb = (BYTE*) ::LockResource(hglobal);
+	LPBYTE pb = static_cast<BYTE*>(::LockResource(hglobal));
 	if (NULL == pb)
 	{
 		FreeLibrary(h);
@@ -1071,11 +1017,10 @@ int CWiseFile::ReadVersionInfoEx()
 
 bool CWiseFile::Init()
 {
-	lstrinit(m_szFullPath);
-	lstrinit(m_szPath);
-	lstrinit(m_szName);
-	lstrinit(m_szExt);
-	lstrinit(m_szShortName);
+	_strFullPath.clear();
+	_strPath.clear();
+	_strName.clear();
+	_strExt.clear();
 	lstrinit(m_szAttribs);
 	lstrinit(m_szFlags);
 	lstrinit(m_szOS);

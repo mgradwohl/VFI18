@@ -54,20 +54,72 @@ enum FileStates
 
 class CWiseFile
 {
+private:
+	bool Init();
+	// Member Variables
+	// Set when a file is added
+	std::wstring		_strFullPath;
+	std::wstring		_strPath;
+	std::wstring		_strName;
+	std::wstring		_strExt;
+
+	// Set when information requested, if not set
+	wchar_t		m_szAttribs[10];
+	wchar_t		m_szFlags[256];
+	wchar_t		m_szOS[64];
+	wchar_t		m_szType[64];
+	wchar_t		m_szSize[64];
+	wchar_t		m_szDateCreated[64];
+	wchar_t		m_szTimeCreated[64];
+	wchar_t		m_szDateLastAccess[64];
+	wchar_t		m_szTimeLastAccess[64];
+	wchar_t		m_szDateLastWrite[64];
+	wchar_t		m_szTimeLastWrite[64];
+	wchar_t		m_szLanguage[64];
+	wchar_t		m_szCodePage[64];
+	wchar_t		m_szCRC[64];
+	wchar_t		m_szFileVersion[64];
+	wchar_t		m_szProductVersion[64];
+
+	// from WIN32_FIND_DATA
+	DWORD		m_dwAttribs;
+	SYSTEMTIME	m_stUTCCreation;
+	SYSTEMTIME	m_stUTCLastAccess;
+	SYSTEMTIME	m_stUTCLastWrite;
+
+	// set when requested, if not set
+	SYSTEMTIME	m_stLocalCreation;
+	SYSTEMTIME	m_stLocalLastAccess;
+	SYSTEMTIME	m_stLocalLastWrite;
+
+	QWORD		m_qwSize;
+	QWORD		m_qwFileVersion;
+	QWORD		m_qwProductVersion;
+	WORD		m_wLanguage;
+	TCodePage	m_CodePage;
+	DWORD		m_dwOS;
+	DWORD		m_dwType;
+	DWORD		m_dwFlags;
+
+	DWORD		m_dwCRC;
+	WORD		m_wFileState;
+
+	// Flags
+	bool m_fDebugStripped;
+	bool m_fHasVersion;
+	bool m_fszOS;
+	bool m_fszType;
+	bool m_fszFlags;
+	bool m_fszAttribs;
 
 public:
 	// construction, destruction
 	CWiseFile();
-	CWiseFile(const CWiseFile& rwf);
-	CWiseFile(LPCWSTR pszFileSpec);
+	CWiseFile(std::wstring strFileSpec);
 	~CWiseFile();
 
-	const CWiseFile& Copy(const CWiseFile& rwf);
-	const CWiseFile& operator=(const CWiseFile& rwf);
-	bool operator==(const CWiseFile& rwf);
-
 	// initialization, release
-	int Attach(LPCWSTR pszFileName);
+	int Attach(std::wstring strFileSpec);
 	int Detach();
 
 	// handlers for listview
@@ -79,7 +131,7 @@ public:
 	{
 		if (CheckState(FWFS_ATTACHED))
 		{
-			return m_szFullPath;
+			return &_strFullPath[0];
 		}
 		return L"\0";
 	}
@@ -88,7 +140,25 @@ public:
 	{
 		if (CheckState(FWFS_ATTACHED))
 		{
-			return m_szPath;
+			return &_strPath[0];
+		}
+		return L"\0";
+	}
+
+	LPWSTR GetName()
+	{
+		if (CheckState(FWFS_ATTACHED))
+		{
+			return &_strName[0];
+		}
+		return L"\0";
+	}
+
+	LPWSTR GetExt()
+	{
+		if (CheckState(FWFS_ATTACHED))
+		{
+			return &_strExt[0];
 		}
 		return L"\0";
 	}
@@ -103,7 +173,7 @@ public:
 		return L"\0";
 	}
 
-	unsigned int Size()
+	uint64_t Size()
 	{
 		return m_qwSize;
 	}
@@ -258,33 +328,6 @@ public:
 		return m_szFlags;
 	}
 
-	LPWSTR GetName()
-	{
-		if (CheckState(FWFS_ATTACHED))
-		{
-			return m_szName;
-		}
-		return L"\0";
-	}
-
-	LPWSTR GetExt()
-	{
-		if (CheckState(FWFS_ATTACHED))
-		{
-			return m_szExt;
-		}
-		return L"\0";
-	}
-
-	LPWSTR GetShortName()
-	{
-		if (CheckState(FWFS_ATTACHED))
-		{
-			return m_szShortName;
-		}
-		return L"\0";
-	}
-
 	int SetSize(bool bHex = false);
 	int SetAttribs();
 
@@ -341,63 +384,4 @@ public:
 	}
 	// execute helpers
 	int ReadVersionInfo();
-
-private:
-	bool Init();
-	// Member Variables
-	// Set when a file is added
-	wchar_t		m_szFullPath[_MAX_PATH];
-	wchar_t		m_szPath[_MAX_PATH];
-	wchar_t		m_szName[_MAX_PATH];
-	wchar_t		m_szExt[_MAX_PATH];
-	wchar_t		m_szShortName[14];
-
-	// Set when information requested, if not set
-	wchar_t		m_szAttribs[10];
-	wchar_t		m_szFlags[256];
-	wchar_t		m_szOS[64];
-	wchar_t		m_szType[64];
-	wchar_t		m_szSize[64];
-	wchar_t		m_szDateCreated[64];
-	wchar_t		m_szTimeCreated[64];
-	wchar_t		m_szDateLastAccess[64];
-	wchar_t		m_szTimeLastAccess[64];
-	wchar_t		m_szDateLastWrite[64];
-	wchar_t		m_szTimeLastWrite[64];
-	wchar_t		m_szLanguage[64];
-	wchar_t		m_szCodePage[64];
-	wchar_t		m_szCRC[64];
-	wchar_t		m_szFileVersion[64];
-	wchar_t		m_szProductVersion[64];
-
-	// from WIN32_FIND_DATA
-	DWORD		m_dwAttribs;
-	SYSTEMTIME	m_stUTCCreation;
-	SYSTEMTIME	m_stUTCLastAccess;
-	SYSTEMTIME	m_stUTCLastWrite;
-
-	// set when requested, if not set
-	SYSTEMTIME	m_stLocalCreation;
-	SYSTEMTIME	m_stLocalLastAccess;
-	SYSTEMTIME	m_stLocalLastWrite;
-
-	QWORD		m_qwSize;
-	QWORD		m_qwFileVersion;
-	QWORD		m_qwProductVersion;
-	WORD		m_wLanguage;
-	TCodePage	m_CodePage;
-	DWORD		m_dwOS;
-	DWORD		m_dwType;
-	DWORD		m_dwFlags;
-
-	DWORD		m_dwCRC;
-	WORD		m_wFileState;
-
-	// Flags
-	bool m_fDebugStripped;
-	bool m_fHasVersion;
-	bool m_fszOS;
-	bool m_fszType;
-	bool m_fszFlags;
-	bool m_fszAttribs;
 };

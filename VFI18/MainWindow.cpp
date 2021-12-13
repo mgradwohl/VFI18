@@ -186,15 +186,15 @@ bool MainWindow::RegisterCreate(HINSTANCE hInstance, HWND hWnd)
 
 bool MainWindow::CreateChildren()
 {
+	INITCOMMONCONTROLSEX iccx;
+	iccx.dwSize = sizeof(INITCOMMONCONTROLSEX);
+	iccx.dwICC = ICC_BAR_CLASSES | ICC_STANDARD_CLASSES | ICC_LISTVIEW_CLASSES;
+	InitCommonControlsEx(&iccx);
+
 	// Setup the status bar with 3 panes, 1: 50%, 2: 25%, 3: 25%
 	std::vector<float> panes({ 0.50, 0.25, 0.25 });
 	
-	if (!_statusbar.Initialize(_hInstance, _hWnd, panes))
-	{
-		return false;
-	}
-
-	if (!_statusbar.Create())
+	if (!_statusbar.InitializeCreate(_hInstance, _hWnd, panes))
 	{
 		return false;
 	}

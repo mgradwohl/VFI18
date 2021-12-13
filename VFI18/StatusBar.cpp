@@ -16,7 +16,7 @@ StatusBar::~StatusBar()
 bool StatusBar::UpdateFileCount(unsigned int i)
 {
 	wchar_t sz[100];
-	wsprintf(sz, L"%u files", i);
+	wprintf_s(sz, L"%u files", i);
 	SendMessage(_hWnd, SB_SETTEXT, 1, (LPARAM)sz);
 	return true;
 }
@@ -24,10 +24,12 @@ bool StatusBar::UpdateFileCount(unsigned int i)
 bool StatusBar::UpdateTotalSize(uint64_t i)
 {
 	wchar_t szSize[100];
+	lstrinit(szSize);
 	int2str(szSize, i);
 
 	wchar_t szStr[100];
-	wsprintf(szStr, L"%s bytes", szSize);
+	lstrinit(szStr);
+	wprintf_s(szStr, L"%s bytes", szSize);
 
 	SendMessage(_hWnd, SB_SETTEXT, 1, (LPARAM)szStr);
 	return true;
@@ -41,7 +43,7 @@ size_t StatusBar::GetHeight()
 	return rectStatusBar.bottom - rectStatusBar.top;
 }
 
-bool StatusBar::Initialize(HINSTANCE hInstance, HWND hWndParent, std::vector<float>& panes)
+bool StatusBar::InitializeCreate(HINSTANCE hInstance, HWND hWndParent, std::vector<float>& panes)
 {
 	_hInstance = hInstance;
 	_panes = panes;
@@ -51,21 +53,11 @@ bool StatusBar::Initialize(HINSTANCE hInstance, HWND hWndParent, std::vector<flo
 	_strIdle.clear();
 	if (size_t length = ::LoadStringW(_hInstance, STRING_STATUSIDLE, (LPWSTR)&pszBuffer, 0))
 	{
-		_strIdle.assign(pszBuffer, length);
+		_strIdle.assign(pszBuffer);
 	}
 
-	return true;
-}
-
-bool StatusBar::Create()
-{
-	INITCOMMONCONTROLSEX iccx;
-	iccx.dwSize = sizeof(INITCOMMONCONTROLSEX);
-	iccx.dwICC = ICC_BAR_CLASSES;
-	InitCommonControlsEx(&iccx);
-
 	HMENU idStatus = 0;
-	HWND hWndStatus = CreateWindowEx(0,	STATUSCLASSNAME, _strIdle.c_str(), SBARS_SIZEGRIP | WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, _hWndParent,	(HMENU)idStatus, _hInstance, NULL);
+	HWND hWndStatus = CreateWindowEx(0, STATUSCLASSNAME, _strIdle.c_str(), SBARS_SIZEGRIP | WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, _hWndParent, (HMENU)idStatus, _hInstance, NULL);
 	if (hWndStatus == NULL)
 	{
 		return false;

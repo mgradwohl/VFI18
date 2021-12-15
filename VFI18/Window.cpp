@@ -13,3 +13,8 @@ Window::Window()
 Window::~Window()
 {
 }
+
+HWND Window::GetHWnd()
+{
+	return _hWnd;
+}

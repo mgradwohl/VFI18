@@ -7,6 +7,7 @@ public:
 	~Window();
 
 	HWND _hWnd;
+	HWND GetHWnd();
 
 protected:
 	HWND _hWndParent;

@@ -47,8 +47,17 @@ LRESULT CALLBACK MainWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 			//I forward them to the window that needs them, because the code to handle these
 			//is in the same class that owns the _hWnd that sent the message
 			LPNMHDR pHdr = (LPNMHDR)lParam;
+			//if (pHdr->hwndFrom != _statusbar.GetHWnd() ||
+			//	pHdr->hwndFrom != _listview.GetHWnd())
+			//{
+			//	TRACE(L">> MainWindow WM_NOTIFY DefWindowProc\r\n");
+			//	return DefWindowProc(hWnd, msg, wParam, lParam);
+
+			//}
+			//else
 			{
 				FORWARD_WM_NOTIFY(pHdr->hwndFrom, wParam, pHdr/*(NMHDR*)lParam*/, SendMessage);
+				TRACE(L">> MainWindow WM_NOTIFY Forward\r\n");
 			}
 			break;
 		}
@@ -82,8 +91,6 @@ void MainWindow::OnFileAdd()
 {
 	//std::wstring strFile;
 	// you can't use a std::wstring with the Windows File Open Dialog, because it uses \0 as separators and wstring will terminate
-
-	//wchar_t* pszFile = new wchar_t[MAXLONGPATH];
 
 	std::wstring file;
 

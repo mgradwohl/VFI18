@@ -6,7 +6,7 @@
 constexpr static size_t LIST_NUMCOLUMNS = STR_COLUMNLAST - STR_COLUMN0;
 constexpr static size_t LIST_MAXHEADLENGTH = 20;
 
-MyListView::MyListView()
+MyListView::MyListView() noexcept
 {
 	m_qwSize = 0;
 }
@@ -16,7 +16,7 @@ MyListView::~MyListView()
 	// get rid of everything
 }
 
-bool MyListView::AddFile(std::wstring& strFile)
+bool MyListView::AddFile(const std::wstring& strFile)
 {
 	// *** if I do *** I get an access violation
 	// *** because the shared_ptr gets cleaned up
